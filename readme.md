@@ -30,7 +30,7 @@ Este proyecto ha sido desarrollado por:
 
 - **Hernan Sarango** - *Desarrollador Full-Stack*
 - **Ayrton Oña** - *Desarrollador Full-Stack*
-
+- **Anthony Pataron** - *Desarrollador Full-Stack*
 ---
 
 ## 🚀 Instalación
@@ -290,12 +290,12 @@ Para soporte técnico o consultas:
 
 - **Hernan Sarango** - [GitHub](https://github.com/hernan-sarango) | [Email](mailto:hernan.sarango@email.com)
 - **Ayrton Oña** - [GitHub](https://github.com/ayrton-ona) | [Email](mailto:ayrton.ona@email.com)
-
+- **Anthony Pataron** - [GitHub](https://github.com/anthony-pataron) | [Email](mailto:anthony.pataron@email.com)
 ---
 
 ## 🙏 Agradecimientos
 
-- **Hernan Sarango** y **Ayrton Oña** - Desarrolladores principales del proyecto
+- **Hernan Sarango**,**Anthony Pataron** y **Ayrton Oña** - Desarrolladores principales del proyecto
 - Equipo de desarrollo de Django
 - Comunidad de desarrolladores Python
 - Especialistas en nutrición infantil que colaboraron en el proyecto
