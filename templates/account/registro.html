@@ -1,0 +1,532 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriScan Kids - Registro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d'
+                        },
+                        secondary: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#16a34a',
+                            600: '#15803d',
+                            700: '#166534',
+                            800: '#14532d',
+                            900: '#052e16'
+                        },
+                        accent: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            200: '#a7f3d0',
+                            300: '#6ee7b7',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b'
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'slide-up': 'slideUp 0.8s ease-out forwards',
+                        'slide-down': 'slideDown 0.5s ease-out forwards',
+                        'scale-in': 'scaleIn 0.5s ease-out forwards',
+                        'glow': 'glow 2s ease-in-out infinite alternate'
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(30px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        slideDown: {
+                            '0%': { transform: 'translateY(-30px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        scaleIn: {
+                            '0%': { transform: 'scale(0.9)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' }
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 20px rgba(34, 197, 94, 0.5)' },
+                            '100%': { boxShadow: '0 0 30px rgba(34, 197, 94, 0.8)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100 overflow-x-hidden">
+    <!-- Fondo animado con partículas -->
+    <div class="fixed inset-0 z-0">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%2322c55e" fill-opacity="0.1"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
+        <div id="particles-container" class="absolute inset-0"></div>
+    </div>
+
+    <!-- Header futurista -->
+    <header class="relative z-10 backdrop-blur-sm bg-white/80 border-b border-primary-200/50 shadow-sm">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-primary-500 to-accent-500 rounded-xl flex items-center justify-center animate-pulse-slow shadow-lg">
+                        <i class="fas fa-leaf text-white text-lg"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
+                        NutriScan Kids
+                    </h1>
+                </div>
+                <div class="hidden md:flex items-center space-x-2 text-gray-600 text-sm">
+                    <i class="fas fa-shield-alt text-primary-500"></i>
+                    <span>Plataforma Segura</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="relative z-10 min-h-screen flex items-center justify-center p-6">
+        <div class="w-full max-w-6xl mx-auto">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                
+                <!-- Panel informativo izquierdo -->
+                <div class="space-y-8 animate-slide-up">
+                    <div class="text-center lg:text-left">
+                        <h2 class="text-4xl lg:text-5xl font-bold text-gray-800 mb-6 leading-tight">
+                            Únete a 
+                            <span class="bg-gradient-to-r from-primary-500 to-accent-500 bg-clip-text text-transparent">
+                                NutriScan Kids
+                            </span>
+                        </h2>
+                        <p class="text-xl text-gray-600 leading-relaxed">
+                            Crea tu cuenta y comienza a monitorear el estado nutricional de tus niños con 
+                            tecnología de vanguardia. Es rápido, seguro y completamente gratuito.
+                        </p>
+                    </div>
+
+                    <!-- Características con iconos animados -->
+                    <div class="grid gap-6">
+                        <div class="feature-card group flex items-center space-x-4 p-6 rounded-2xl bg-white/70 backdrop-blur-sm border border-primary-200/50 hover:bg-white/90 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
+                            <div class="feature-icon w-12 h-12 bg-gradient-to-r from-accent-500 to-secondary-500 rounded-xl flex items-center justify-center group-hover:animate-pulse shadow-lg">
+                                <i class="fas fa-graduation-cap text-white text-lg"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-gray-800 font-semibold mb-1">Recursos Educativos</h3>
+                                <p class="text-gray-600 text-sm">Guías y consejos nutricionales personalizados</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Estadísticas de confianza -->
+                    <div class="mt-12 text-center lg:text-left">
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-primary-500 mb-1">10K+</div>
+                                <div class="text-xs text-gray-600">Usuarios</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-accent-500 mb-1">99.9%</div>
+                                <div class="text-xs text-gray-600">Precisión</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-secondary-600 mb-1">24/7</div>
+                                <div class="text-xs text-gray-600">Soporte</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel de registro derecho -->
+                <div class="animate-scale-in">
+                    <div class="bg-white/90 backdrop-blur-xl rounded-3xl border border-primary-200/50 shadow-2xl overflow-hidden">
+                        <!-- Tabs futuristas -->
+                        <div class="flex bg-green-50/50 border-b border-primary-200/50">
+                            <a href="{% url 'security:login' %}" 
+                               id="login-tab"
+                               class="tab flex-1 py-4 px-6 text-center transition-all duration-300 relative {% if request.resolver_match.url_name == 'login' %}text-primary-600 bg-white/70{% else %}text-gray-600 hover:text-gray-800 hover:bg-white/30{% endif %}">
+                                <i class="fas fa-sign-in-alt mr-2"></i>
+                                Iniciar Sesión
+                                {% if request.resolver_match.url_name == 'login' %}
+                                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-500 to-accent-500"></div>
+                                {% endif %}
+                            </a>
+                            <a href="{% url 'security:register' %}" 
+                               id="register-tab"
+                               class="tab flex-1 py-4 px-6 text-center transition-all duration-300 relative {% if request.resolver_match.url_name == 'register' %}text-primary-600 bg-white/70{% else %}text-gray-600 hover:text-gray-800 hover:bg-white/30{% endif %}">
+                                <i class="fas fa-user-plus mr-2"></i>
+                                Registrarse
+                                {% if request.resolver_match.url_name == 'register' %}
+                                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-500 to-accent-500"></div>
+                                {% endif %}
+                            </a>
+                        </div>
+
+                        <!-- Contenido del formulario -->
+                        <div class="p-8">
+                            <!-- Mensajes del sistema -->
+                            <div id="messages" class="mb-6">
+                                {% if messages %}
+                                    {% for message in messages %}
+                                    <div class="message-alert p-4 rounded-xl border-l-4 {{ message.tags }} mb-4 animate-slide-down">
+                                        <div class="flex items-center">
+                                            <i class="fas {% if message.tags == 'success' %}fa-check-circle text-primary-500{% elif message.tags == 'error' %}fa-exclamation-circle text-red-500{% elif message.tags == 'warning' %}fa-exclamation-triangle text-amber-500{% else %}fa-info-circle text-blue-500{% endif %} mr-3"></i>
+                                            <span class="text-gray-700">{{ message }}</span>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+
+                            <!-- Mensaje de éxito -->
+                            <div id="success-message" class="hidden p-4 rounded-xl bg-primary-50 border border-primary-200 mb-6 animate-slide-down">
+                                <div class="flex items-center text-primary-600">
+                                    <i class="fas fa-check-circle text-2xl mr-3"></i>
+                                    <p id="success-text" class="text-gray-700"></p>
+                                </div>
+                            </div>
+
+                            <!-- Formulario de registro -->
+                            <form method="post" id="register-form" class="space-y-6">
+                                {% csrf_token %}
+                                
+                                <div class="form-group">
+                                    <label for="id_first_name" class="block text-gray-700 font-medium mb-2">
+                                        <i class="fas fa-user mr-2 text-primary-500"></i>Nombres
+                                    </label>
+                                    <div class="relative">
+                                        <input type="text" 
+                                               name="first_name" 
+                                               id="id_first_name"
+                                               class="w-full px-4 py-3 bg-white/70 border border-primary-200 rounded-xl text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all duration-300 backdrop-blur-sm"
+                                               placeholder="Ingrese su nombre completo"
+                                               value="{{ user_form.first_name.value|default:'' }}">
+                                        <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                            <i class="fas fa-user text-gray-400"></i>
+                                        </div>
+                                    </div>
+                                    <div class="field-error mt-2 hidden">
+                                        <p class="text-red-500 text-sm flex items-center">
+                                            <i class="fas fa-exclamation-circle mr-2"></i>
+                                            <span></span>
+                                        </p>
+                                    </div>
+                                    {% if user_form.first_name.errors %}
+                                        <div class="validation-message mt-2 text-red-500 text-sm flex items-center">
+                                            <i class="fas fa-exclamation-circle mr-2"></i>{{ user_form.first_name.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="id_username" class="block text-gray-700 font-medium mb-2">
+                                        <i class="fas fa-at mr-2 text-primary-500"></i>Usuario
+                                    </label>
+                                    <div class="relative">
+                                        <input type="text" 
+                                               name="username" 
+                                               id="id_username"
+                                               class="w-full px-4 py-3 bg-white/70 border border-primary-200 rounded-xl text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all duration-300 backdrop-blur-sm"
+                                               placeholder="Elija un nombre de usuario único"
+                                               value="{{ user_form.username.value|default:'' }}">
+                                        <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                            <i class="fas fa-at text-gray-400"></i>
+                                        </div>
+                                    </div>
+                                    <div class="field-error mt-2 hidden">
+                                        <p class="text-red-500 text-sm flex items-center">
+                                            <i class="fas fa-exclamation-circle mr-2"></i>
+                                            <span></span>
+                                        </p>
+                                    </div>
+                                    {% if user_form.username.errors %}
+                                        <div class="validation-message mt-2 text-red-500 text-sm flex items-center">
+                                            <i class="fas fa-exclamation-circle mr-2"></i>{{ user_form.username.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="id_email" class="block text-gray-700 font-medium mb-2">
+                                        <i class="fas fa-envelope mr-2 text-primary-500"></i>Correo Electrónico
+                                    </label>
+                                    <div class="relative">
+                                        <input type="email" 
+                                               name="email" 
+                                               id="id_email"
+                                               class="w-full px-4 py-3 bg-white/70 border border-primary-200 rounded-xl text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all duration-300 backdrop-blur-sm"
+                                               placeholder="ejemplo@correo.com"
+                                               value="{{ user_form.email.value|default:'' }}">
+                                        <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                            <i class="fas fa-envelope text-gray-400"></i>
+                                        </div>
+                                    </div>
+                                    <div class="field-error mt-2 hidden">
+                                        <p class="text-red-500 text-sm flex items-center">
+                                            <i class="fas fa-exclamation-circle mr-2"></i>
+                                            <span></span>
+                                        </p>
+                                    </div>
+                                    {% if user_form.email.errors %}
+                                        <div class="validation-message mt-2 text-red-500 text-sm flex items-center">
+                                            <i class="fas fa-exclamation-circle mr-2"></i>{{ user_form.email.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                <label for="id_password1" class="block text-gray-700 font-medium mb-2">
+                                    <i class="fas fa-lock mr-2 text-primary-500"></i>Contraseña
+                                </label>
+                                <div class="relative">
+                                    <input type="password" 
+                                        name="password1" 
+                                        id="id_password1"
+                                        class="w-full px-4 py-3 bg-white/70 border border-primary-200 rounded-xl text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all duration-300 backdrop-blur-sm"
+                                        placeholder="Cree una contraseña segura">
+                                    <button type="button" 
+                                            id="toggle-password" 
+                                            class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 transition-colors duration-200">
+                                        <i id="password-icon" class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="field-error mt-2 hidden">
+                                    <p class="text-red-500 text-sm flex items-center">
+                                        <i class="fas fa-exclamation-circle mr-2"></i>
+                                        <span></span>
+                                    </p>
+                                </div>
+                                <!-- Indicador de fortaleza de contraseña -->
+                                <div id="password-strength" class="hidden mt-2">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                            <div id="strength-bar" class="h-2 rounded-full transition-all duration-300"></div>
+                                        </div>
+                                        <span id="strength-text" class="text-xs text-gray-600"></span>
+                                    </div>
+                                    <div id="password-requirements" class="mt-2 space-y-1 text-xs">
+                                        <div class="requirement flex items-center space-x-2" data-requirement="length">
+                                            <i class="fas fa-circle text-gray-400"></i>
+                                            <span class="text-gray-600">Al menos 8 caracteres</span>
+                                        </div>
+                                        <div class="requirement flex items-center space-x-2" data-requirement="uppercase">
+                                            <i class="fas fa-circle text-gray-400"></i>
+                                            <span class="text-gray-600">Una letra mayúscula</span>
+                                        </div>
+                                        <div class="requirement flex items-center space-x-2" data-requirement="lowercase">
+                                            <i class="fas fa-circle text-gray-400"></i>
+                                            <span class="text-gray-600">Una letra minúscula</span>
+                                        </div>
+                                        <div class="requirement flex items-center space-x-2" data-requirement="numbers">
+                                            <i class="fas fa-circle text-gray-400"></i>
+                                            <span class="text-gray-600">Un número</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if user_form.password1.errors %}
+                                    <div class="validation-message mt-2 text-red-500 text-sm flex items-center">
+                                        <i class="fas fa-exclamation-circle mr-2"></i>{{ user_form.password1.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                                <div class="form-group">
+                                    <label for="id_password2" class="block text-gray-700 font-medium mb-2">
+                                        <i class="fas fa-lock mr-2 text-primary-500"></i>Confirmar Contraseña
+                                    </label>
+                                    <div class="relative">
+                                        <input type="password" 
+                                               name="password2" 
+                                               id="id_password2"
+                                               class="w-full px-4 py-3 bg-white/70 border border-primary-200 rounded-xl text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all duration-300 backdrop-blur-sm"
+                                               placeholder="Repita su contraseña">
+                                        <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                            <i id="password2-status" class="fas fa-circle text-gray-400"></i>
+                                        </div>
+                                    </div>
+                                    <div class="field-error mt-2 hidden">
+                                        <p class="text-red-500 text-sm flex items-center">
+                                            <i class="fas fa-exclamation-circle mr-2"></i>
+                                            <span></span>
+                                        </p>
+                                    </div>
+                                    {% if user_form.password2.errors %}
+                                        <div class="validation-message mt-2 text-red-500 text-sm flex items-center">
+                                            <i class="fas fa-exclamation-circle mr-2"></i>{{ user_form.password2.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Términos y condiciones -->
+                                <div class="flex items-start space-x-3">
+                                    <input type="checkbox" 
+                                           id="terms-checkbox" 
+                                           class="mt-1 w-4 h-4 text-primary-600 bg-white border-primary-300 rounded focus:ring-primary-500 focus:ring-2">
+                                    <label for="terms-checkbox" class="text-gray-700 text-sm leading-relaxed">
+                                        Acepto los 
+                                        <a href="#" class="text-primary-500 hover:text-primary-600 transition-colors duration-200">términos y condiciones</a> 
+                                        y la 
+                                        <a href="#" class="text-primary-500 hover:text-primary-600 transition-colors duration-200">política de privacidad</a>
+                                        de NutriScan Kids.
+                                    </label>
+                                </div>
+
+                                <button type="submit" 
+                                        id="submit-btn"
+                                        class="w-full bg-gradient-to-r from-primary-500 to-accent-500 text-white font-semibold py-3 px-6 rounded-xl hover:from-primary-600 hover:to-accent-600 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 focus:ring-offset-white transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl animate-glow disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                                    <span id="btn-text">
+                                        <i class="fas fa-user-plus mr-2"></i>Crear Cuenta
+                                    </span>
+                                    <span id="btn-loading" class="hidden">
+                                        <i class="fas fa-spinner fa-spin mr-2"></i>Creando cuenta...
+                                    </span>
+                                </button>
+
+                                <!-- Información adicional -->
+                                <div class="text-center mt-6">
+                                    <p class="text-gray-600 text-sm">
+                                        ¿Ya tienes una cuenta?
+                                        <a href="{% url 'security:login' %}" class="text-primary-500 hover:text-primary-600 transition-colors duration-200 font-medium">
+                                            Inicia sesión aquí
+                                        </a>
+                                    </p>
+                                </div>
+
+                                <!-- Separador -->
+                                <div class="relative mt-8">
+                                    <div class="absolute inset-0 flex items-center">
+                                        <div class="w-full border-t border-primary-200"></div>
+                                    </div>
+                                    <div class="relative flex justify-center text-sm">
+                                        <span class="px-4 bg-white text-gray-500">¿Necesitas ayuda?</span>
+                                    </div>
+                                </div>
+
+                                <!-- Enlaces de ayuda -->
+                                <div class="flex justify-center space-x-6 mt-6">
+                                    <a href="#" class="text-gray-500 hover:text-primary-500 transition-colors duration-200 text-sm flex items-center">
+                                        <i class="fas fa-question-circle mr-2"></i>
+                                        FAQ
+                                    </a>
+                                    <a href="#" class="text-gray-500 hover:text-primary-500 transition-colors duration-200 text-sm flex items-center">
+                                        <i class="fas fa-envelope mr-2"></i>
+                                        Soporte
+                                    </a>
+                                    <a href="#" class="text-gray-500 hover:text-primary-500 transition-colors duration-200 text-sm flex items-center">
+                                        <i class="fas fa-phone mr-2"></i>
+                                        Contacto
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Panel de información adicional -->
+                    <div class="mt-8 text-center">
+                        <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-primary-200/50 shadow-lg">
+                            <h3 class="text-gray-800 font-semibold mb-3 flex items-center justify-center">
+                                <i class="fas fa-shield-check text-primary-500 mr-2"></i>
+                                Garantía de Seguridad
+                            </h3>
+                            <p class="text-gray-600 text-sm leading-relaxed">
+                                Tus datos están protegidos con encriptación de nivel bancario. 
+                                Nunca compartimos tu información personal con terceros.
+                            </p>
+                            <div class="flex justify-center items-center mt-4 space-x-4 text-xs text-gray-500">
+                                <div class="flex items-center">
+                                    <i class="fas fa-lock mr-1"></i>
+                                    SSL 256-bit
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-database mr-1"></i>
+                                    GDPR Compliant
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle mr-1"></i>
+                                    ISO 27001
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer minimalista -->
+    <footer class="relative z-10 border-t border-primary-200 bg-white/60 backdrop-blur-sm">
+        <div class="container mx-auto px-6 py-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="text-gray-800 font-semibold mb-4">NutriScan Kids</h4>
+                    <p class="text-gray-600 text-sm">
+                        Tecnología avanzada para el cuidado nutricional infantil.
+                    </p>
+                </div>
+                <div>
+                    <h5 class="text-gray-700 font-medium mb-3">Producto</h5>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="text-gray-600 hover:text-primary-500 transition-colors">Características</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-primary-500 transition-colors">Precios</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-primary-500 transition-colors">API</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="text-gray-700 font-medium mb-3">Soporte</h5>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="text-gray-600 hover:text-primary-500 transition-colors">Documentación</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-primary-500 transition-colors">Centro de Ayuda</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-primary-500 transition-colors">Contacto</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="text-gray-700 font-medium mb-3">Legal</h5>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="text-gray-600 hover:text-primary-500 transition-colors">Privacidad</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-primary-500 transition-colors">Términos</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-primary-500 transition-colors">Cookies</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-primary-200 mt-8 pt-6 text-center">
+                <p class="text-gray-600 text-sm">
+                    © 2025 NutriScan Kids. Todos los derechos reservados.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{% static 'js/register-handler.js' %}"></script>
+    <script src="{% static 'js/animation-manager.js' %}"></script>
+    <script src="{% static 'js/particles.js' %}"></script>
+    <script src="{% static 'js/mensajes.js' %}"></script>
+</body>
+</html>

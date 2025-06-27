@@ -1,0 +1,19 @@
+
+#ENTORNOS VIRTUALES
+.venv
+.env
+my_ent
+venv
+
+#MIGRATIONS
+migrations
+
+#cache
+__pycache__
+
+#MEDIA
+EvidenciaNutriScanKids
+media
+db.sqlite3
+static
+

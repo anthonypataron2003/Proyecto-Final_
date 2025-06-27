@@ -1,0 +1,1004 @@
+{% extends 'detector/base.html' %} {% load static %} 
+
+{% block page_title %}Editar Recurso{% endblock %} 
+{% block page_subtitle %}Actualiza la información del recurso educativo{% endblock %} 
+
+{% block breadcrumbs %}
+<li class="flex items-center">
+  <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+  <a href="{% url 'recursos:recursos_educativos' %}" class="text-gray-600 hover:text-primary transition-colors">Recursos Educativos</a>
+</li>
+<li class="flex items-center">
+  <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+  <a href="{% url 'recursos:detalle_recurso' recurso.pk %}" class="text-gray-600 hover:text-primary transition-colors">{{ recurso.titulo|truncatechars:20 }}</a>
+</li>
+<li class="flex items-center">
+  <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+  <span class="text-primary font-medium">Editar</span>
+</li>
+{% endblock %} 
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-8">
+  <!-- Header Section -->
+  <div class="text-center mb-12">
+    <div class="relative mb-8 animate-float">
+      <div class="w-24 h-24 mx-auto relative">
+        <div
+          class="absolute inset-0 bg-gradient-to-r from-accent/20 to-primary/20 rounded-2xl animate-morph"
+        ></div>
+        <div
+          class="w-full h-full bg-gradient-to-r from-accent to-primary rounded-2xl flex items-center justify-center animate-glow relative z-10 shadow-lg"
+        >
+          <i class="fas fa-edit text-white text-3xl animate-pulse"></i>
+        </div>
+        <div
+          class="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-secondary to-warning rounded-full animate-bounce"
+        ></div>
+      </div>
+    </div>
+
+    <h1 class="text-4xl font-black mb-4">
+      <span
+        class="bg-gradient-to-r from-accent via-primary to-secondary bg-clip-text text-transparent"
+      >
+        Editar Recurso
+      </span>
+    </h1>
+    <p
+      class="text-lg text-gray-700 font-medium max-w-2xl mx-auto leading-relaxed"
+    >
+      Actualiza la información de
+      <span class="text-primary font-bold">"{{ recurso.titulo }}"</span>
+    </p>
+  </div>
+
+  <!-- Quick Info Card -->
+  <div class="glass rounded-2xl p-6 border border-primary/20 shadow-lg mb-8">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <div class="w-12 h-12 bg-gradient-to-r from-primary/20 to-accent/20 rounded-xl flex items-center justify-center">
+          <i class="fas fa-info-circle text-primary text-xl"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-gray-800">Información del Recurso</h3>
+          <p class="text-gray-600">Creado el {{ recurso.fecha_creacion|date:"d/m/Y" }} - {{ recurso.visualizaciones }} vistas - {{ recurso.descargas }} descargas</p>
+        </div>
+      </div>
+      
+      <div class="flex space-x-2">
+        <a
+          href="{% url 'recursos:detalle_recurso' recurso.pk %}"
+          class="px-4 py-2 glass text-gray-700 font-medium rounded-lg hover:bg-primary/10 transition-all duration-300 border border-primary/20"
+        >
+          <i class="fas fa-eye mr-2"></i>Ver
+        </a>
+        
+      <a
+        href="{% url 'recursos:eliminar_recurso' recurso.pk %}"
+        class="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-600 font-medium rounded-lg transition-all duration-300"
+      >
+        <i class="fas fa-trash mr-2"></i>Eliminar
+      </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Card -->
+  <div class="glass rounded-2xl p-8 border border-primary/20 shadow-lg">
+    <form method="POST" enctype="multipart/form-data" id="edit-resource-form" class="space-y-8">
+      {% csrf_token %}
+      
+      <!-- Form Errors -->
+      {% if form.non_field_errors %}
+      <div class="bg-red-50 border border-red-200 rounded-xl p-4">
+        <div class="flex items-center space-x-2">
+          <i class="fas fa-exclamation-triangle text-red-500"></i>
+          <h4 class="text-red-800 font-semibold">Error en el formulario</h4>
+        </div>
+        <ul class="mt-2 text-red-700 text-sm space-y-1">
+          {% for error in form.non_field_errors %}
+          <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <!-- Basic Information Section -->
+      <div class="space-y-6">
+        <div class="border-b border-gray-200 pb-4">
+          <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+            <i class="fas fa-info-circle text-primary mr-3"></i>
+            Información Básica
+          </h2>
+          <p class="text-gray-600 mt-2">Actualiza los datos principales del recurso</p>
+        </div>
+
+        <!-- Title Field -->
+        <div class="space-y-2">
+          <label for="{{ form.titulo.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+            <i class="fas fa-heading text-primary mr-2"></i>Título del Recurso
+            <span class="text-red-500">*</span>
+          </label>
+          {{ form.titulo }}
+          {% if form.titulo.errors %}
+          <div class="text-red-600 text-sm mt-1">
+            {% for error in form.titulo.errors %}
+            <p><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+            {% endfor %}
+          </div>
+          {% endif %}
+          <p class="text-gray-500 text-sm">Título descriptivo y atractivo para el recurso</p>
+        </div>
+
+        <!-- Category Field -->
+        <div class="space-y-2">
+          <label for="{{ form.categoria.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+            <i class="fas fa-tag text-accent mr-2"></i>Categoría
+            <span class="text-red-500">*</span>
+          </label>
+          {{ form.categoria }}
+          {% if form.categoria.errors %}
+          <div class="text-red-600 text-sm mt-1">
+            {% for error in form.categoria.errors %}
+            <p><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+            {% endfor %}
+          </div>
+          {% endif %}
+          <p class="text-gray-500 text-sm">Categoría actual: <strong>{{ recurso.get_categoria_display }}</strong></p>
+        </div>
+
+        <!-- Description Field -->
+        <div class="space-y-2">
+          <label for="{{ form.descripcion.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+            <i class="fas fa-align-left text-secondary mr-2"></i>Descripción
+            <span class="text-red-500">*</span>
+          </label>
+          {{ form.descripcion }}
+          {% if form.descripcion.errors %}
+          <div class="text-red-600 text-sm mt-1">
+            {% for error in form.descripcion.errors %}
+            <p><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+            {% endfor %}
+          </div>
+          {% endif %}
+          <p class="text-gray-500 text-sm">Describe el contenido y beneficios del recurso (máximo 500 caracteres)</p>
+          <div class="text-right">
+            <span id="description-counter" class="text-sm text-gray-400">0/500</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Current File Section -->
+      {% if recurso.archivo %}
+      <div class="space-y-6">
+        <div class="border-b border-gray-200 pb-4">
+          <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+            <i class="fas fa-file text-warning mr-3"></i>
+            Archivo Actual
+          </h2>
+          <p class="text-gray-600 mt-2">Información del archivo existente</p>
+        </div>
+
+        <div class="glass rounded-xl p-6 border border-primary/10">
+          <div class="flex items-center space-x-4">
+            <div class="w-16 h-16 rounded-xl flex items-center justify-center
+              {% if recurso.extension_archivo == 'PDF' %}
+                bg-red-100
+              {% elif recurso.extension_archivo == 'DOCX' %}
+                bg-blue-100
+              {% elif recurso.extension_archivo == 'MP4' %}
+                bg-purple-100
+              {% else %}
+                bg-gray-100
+              {% endif %}
+            ">
+              {% if recurso.extension_archivo == 'PDF' %}
+                <i class="fas fa-file-pdf text-red-500 text-2xl"></i>
+              {% elif recurso.extension_archivo == 'DOCX' %}
+                <i class="fas fa-file-word text-blue-500 text-2xl"></i>
+              {% elif recurso.extension_archivo == 'MP4' %}
+                <i class="fas fa-file-video text-purple-500 text-2xl"></i>
+              {% else %}
+                <i class="fas fa-file text-gray-500 text-2xl"></i>
+              {% endif %}
+            </div>
+            
+            <div class="flex-1">
+              <h4 class="font-semibold text-gray-800">{{ recurso.titulo }}</h4>
+              <p class="text-gray-600">Formato: {{ recurso.extension_archivo }}</p>
+              <p class="text-gray-600">Tamaño: {{ recurso.tamaño_archivo_mb|floatformat:1 }} MB</p>
+              <p class="text-gray-500 text-sm">Subido el {{ recurso.fecha_creacion|date:"d/m/Y H:i" }}</p>
+            </div>
+            
+            <div class="flex space-x-2">
+              <a
+                href="{% url 'recursos:descargar_recurso' recurso.pk %}"
+                class="px-4 py-2 bg-gradient-to-r from-secondary to-warning text-white font-medium rounded-lg hover:shadow-lg transition-all duration-300"
+                target="_blank"
+              >
+                <i class="fas fa-download mr-2"></i>Descargar
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- File Upload Section -->
+      <div class="space-y-6">
+        <div class="border-b border-gray-200 pb-4">
+          <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+            <i class="fas fa-cloud-upload-alt text-warning mr-3"></i>
+            {% if recurso.archivo %}Reemplazar Archivo{% else %}Subir Archivo{% endif %}
+          </h2>
+          <p class="text-gray-600 mt-2">
+            {% if recurso.archivo %}
+              Sube un nuevo archivo para reemplazar el actual (opcional)
+            {% else %}
+              Sube el archivo principal del recurso educativo
+            {% endif %}
+          </p>
+        </div>
+
+        <!-- File Upload -->
+        <div class="space-y-2">
+          <label class="block text-sm font-semibold text-gray-700">
+            <i class="fas fa-file-upload text-warning mr-2"></i>{% if recurso.archivo %}Nuevo {% endif %}Archivo
+            {% if not recurso.archivo %}<span class="text-red-500">*</span>{% endif %}
+          </label>
+          
+          <div class="file-upload-area border-2 border-dashed border-primary/30 rounded-xl p-8 text-center hover:border-primary/50 transition-all duration-300 cursor-pointer bg-primary/5 hover:bg-primary/10">
+            <div id="upload-placeholder" class="space-y-4">
+              <div class="w-16 h-16 mx-auto bg-gradient-to-r from-primary/20 to-accent/20 rounded-xl flex items-center justify-center">
+                <i class="fas fa-cloud-upload-alt text-primary text-2xl"></i>
+              </div>
+              <div>
+                <p class="text-lg font-semibold text-gray-700">
+                  {% if recurso.archivo %}
+                    Arrastra un nuevo archivo aquí
+                  {% else %}
+                    Arrastra tu archivo aquí
+                  {% endif %}
+                </p>
+                <p class="text-gray-500">o haz clic para seleccionar</p>
+              </div>
+              <div class="text-sm text-gray-400">
+                <p>Formatos soportados: PDF, DOCX, MP4, JPG, PNG</p>
+                <p>Tamaño máximo: 10 MB</p>
+              </div>
+            </div>
+            
+            <div id="file-preview" class="hidden space-y-4">
+              <div class="flex items-center justify-center space-x-4">
+                <div id="file-icon" class="w-12 h-12 rounded-lg flex items-center justify-center"></div>
+                <div class="text-left">
+                  <p id="file-name" class="font-semibold text-gray-800"></p>
+                  <p id="file-size" class="text-sm text-gray-500"></p>
+                </div>
+              </div>
+              <button type="button" id="remove-file" class="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition-colors duration-300">
+                <i class="fas fa-trash mr-2"></i>Remover archivo
+              </button>
+            </div>
+            
+            {{ form.archivo }}
+          </div>
+          
+          {% if form.archivo.errors %}
+          <div class="text-red-600 text-sm mt-1">
+            {% for error in form.archivo.errors %}
+            <p><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Additional Content Section -->
+      <div class="space-y-6">
+        <div class="border-b border-gray-200 pb-4">
+          <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+            <i class="fas fa-plus-square text-accent mr-3"></i>
+            Contenido Adicional
+          </h2>
+          <p class="text-gray-600 mt-2">Información complementaria (opcional)</p>
+        </div>
+
+        <!-- Additional Content Field -->
+        <div class="space-y-2">
+          <label for="{{ form.contenido_adicional.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+            <i class="fas fa-file-alt text-accent mr-2"></i>Información Adicional
+          </label>
+          {{ form.contenido_adicional }}
+          {% if form.contenido_adicional.errors %}
+          <div class="text-red-600 text-sm mt-1">
+            {% for error in form.contenido_adicional.errors %}
+            <p><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+            {% endfor %}
+          </div>
+          {% endif %}
+          <p class="text-gray-500 text-sm">Agrega instrucciones, notas o información complementaria</p>
+        </div>
+
+        <!-- Active Status -->
+        <div class="flex items-center space-x-3">
+          {{ form.activo }}
+          <label for="{{ form.activo.id_for_label }}" class="text-sm font-semibold text-gray-700 cursor-pointer">
+            <i class="fas fa-eye text-primary mr-2"></i>Recurso activo y visible
+          </label>
+        </div>
+      </div>
+
+      <!-- Change Log Section -->
+      <div class="space-y-6">
+        <div class="border-b border-gray-200 pb-4">
+          <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+            <i class="fas fa-history text-secondary mr-3"></i>
+            Registro de Cambios
+          </h2>
+          <p class="text-gray-600 mt-2">Documenta los cambios realizados (opcional)</p>
+        </div>
+
+        <div class="space-y-2">
+          <label for="change-notes" class="block text-sm font-semibold text-gray-700">
+            <i class="fas fa-edit text-secondary mr-2"></i>Notas de los Cambios
+          </label>
+          <textarea
+            id="change-notes"
+            name="change_notes"
+            rows="3"
+            placeholder="Describe brevemente los cambios realizados..."
+            class="w-full glass rounded-xl px-4 py-3 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-300 border border-primary/20 hover:border-primary/40 bg-white/70"
+          ></textarea>
+          <p class="text-gray-500 text-sm">Estas notas se guardarán en el historial de cambios del recurso</p>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="border-t border-gray-200 pt-8">
+        <div class="flex flex-col sm:flex-row gap-4 justify-between">
+          <div class="flex gap-4">
+            <a
+              href="{% url 'recursos:detalle_recurso' recurso.pk %}"
+              class="px-6 py-3 glass text-gray-700 font-semibold rounded-xl hover:bg-gray-100 transition-all duration-300 border border-gray-300 text-center"
+            >
+              <i class="fas fa-times mr-2"></i>Cancelar
+            </a>
+            
+            <button
+              type="button"
+              id="preview-changes-btn"
+              class="px-6 py-3 bg-gradient-to-r from-accent to-primary text-white font-semibold rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+            >
+              <i class="fas fa-eye mr-2"></i>Previsualizar
+            </button>
+          </div>
+          
+          <button
+            type="submit"
+            id="submit-btn"
+            class="px-8 py-3 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-xl hover:shadow-glow transition-all duration-300 transform hover:scale-105 shadow-lg"
+          >
+            <i class="fas fa-save mr-2"></i>Guardar Cambios
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Version History -->
+  <div class="glass rounded-2xl p-6 border border-primary/20 shadow-lg">
+    <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+      <i class="fas fa-history text-primary mr-2"></i>Historial de Versiones
+    </h3>
+    
+    <div class="space-y-4">
+      <div class="flex items-center justify-between p-4 bg-primary/5 rounded-xl border border-primary/10">
+        <div class="flex items-center space-x-4">
+          <div class="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+            <i class="fas fa-clock text-primary"></i>
+          </div>
+          <div>
+            <p class="font-semibold text-gray-800">Versión actual</p>
+            <p class="text-sm text-gray-600">Última modificación: {{ recurso.fecha_actualizacion|date:"d/m/Y H:i"|default:recurso.fecha_creacion|date:"d/m/Y H:i" }}</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary">
+            Actual
+          </span>
+        </div>
+      </div>
+      
+      <div class="text-center py-8 text-gray-500">
+        <i class="fas fa-info-circle text-2xl mb-2"></i>
+        <p>El historial de versiones se mostrará aquí después de realizar cambios</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+  <div class="glass rounded-3xl max-w-md w-full border border-red-300 shadow-2xl bg-white/95 animate-scale-in">
+    <!-- Modal Header -->
+    <div class="bg-gradient-to-r from-red-50 to-pink-50 p-6 border-b border-red-200">
+      <div class="flex items-center space-x-3">
+        <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+          <i class="fas fa-exclamation-triangle text-red-500 text-xl"></i>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-gray-800">Confirmar Eliminación</h3>
+          <p class="text-gray-600">Esta acción no se puede deshacer</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Content -->
+    <div class="p-6">
+      <p class="text-gray-700 mb-4">
+        ¿Estás seguro de que quieres eliminar el recurso 
+        <strong id="delete-resource-name" class="text-red-600"></strong>?
+      </p>
+      
+      <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+        <div class="flex items-start space-x-3">
+          <i class="fas fa-info-circle text-red-500 mt-0.5"></i>
+          <div class="text-sm text-red-700">
+            <p class="font-semibold mb-1">Consecuencias de eliminar:</p>
+            <ul class="space-y-1">
+              <li>• El archivo será eliminado permanentemente</li>
+              <li>• Se perderán todas las estadísticas</li>
+              <li>• Los enlaces a este recurso dejarán de funcionar</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3 border-t border-gray-200">
+      <button
+        id="cancel-delete"
+        class="px-4 py-2 glass text-gray-700 rounded-lg hover:bg-gray-100 transition-all duration-300 border border-gray-300"
+      >
+        Cancelar
+      </button>
+      <button
+        id="confirm-delete"
+        class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-300"
+      >
+        <i class="fas fa-trash mr-2"></i>Eliminar Recurso
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("edit-resource-form");
+    const fileInput = document.querySelector('input[type="file"]');
+    const uploadArea = document.querySelector('.file-upload-area');
+    const uploadPlaceholder = document.getElementById("upload-placeholder");
+    const filePreview = document.getElementById("file-preview");
+    const fileIcon = document.getElementById("file-icon");
+    const fileName = document.getElementById("file-name");
+    const fileSize = document.getElementById("file-size");
+    const removeFileBtn = document.getElementById("remove-file");
+    const submitBtn = document.getElementById("submit-btn");
+    const previewBtn = document.getElementById("preview-changes-btn");
+    const deleteBtn = document.getElementById("delete-resource-btn");
+    const deleteModal = document.getElementById("deleteModal");
+    const cancelDelete = document.getElementById("cancel-delete");
+    const confirmDelete = document.getElementById("confirm-delete");
+    const descriptionField = document.querySelector('textarea[name="descripcion"]');
+    const descriptionCounter = document.getElementById("description-counter");
+
+    // Style form fields
+    const textInputs = document.querySelectorAll('input[type="text"], textarea, select');
+    textInputs.forEach(input => {
+      input.className = 'w-full glass rounded-xl px-4 py-3 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-300 border border-primary/20 hover:border-primary/40 bg-white/70';
+    });
+
+    // Hide file input
+    fileInput.style.display = 'none';
+
+    // Description character counter
+    if (descriptionField && descriptionCounter) {
+      function updateCounter() {
+        const length = descriptionField.value.length;
+        descriptionCounter.textContent = `${length}/500`;
+        
+        if (length > 450) {
+          descriptionCounter.classList.add('text-warning');
+        } else if (length > 500) {
+          descriptionCounter.classList.remove('text-warning');
+          descriptionCounter.classList.add('text-red-500');
+        } else {
+          descriptionCounter.classList.remove('text-warning', 'text-red-500');
+          descriptionCounter.classList.add('text-gray-400');
+        }
+      }
+
+      descriptionField.addEventListener('input', updateCounter);
+      updateCounter(); // Initial count
+    }
+
+    // File upload handling
+    uploadArea.addEventListener('click', () => fileInput.click());
+    
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('border-primary', 'bg-primary/20');
+    });
+    
+    uploadArea.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('border-primary', 'bg-primary/20');
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('border-primary', 'bg-primary/20');
+      
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        handleFileSelect(files[0]);
+      }
+    });
+    
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        handleFileSelect(e.target.files[0]);
+      }
+    });
+
+    function handleFileSelect(file) {
+      // Validate file type
+      const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'video/mp4', 'image/jpeg', 'image/png'];
+      if (!allowedTypes.includes(file.type)) {
+        showNotification('Tipo de archivo no soportado', 'error');
+        return;
+      }
+
+      // Validate file size (10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        showNotification('El archivo es demasiado grande (máximo 10MB)', 'error');
+        return;
+      }
+
+      // Update UI
+      updateFilePreview(file);
+      showNotification('Nuevo archivo seleccionado', 'success');
+    }
+
+    function updateFilePreview(file) {
+      const fileExtension = file.name.split('.').pop().toLowerCase();
+      const fileSizeMB = (file.size / (1024 * 1024)).toFixed(1);
+
+      // Update file icon
+      fileIcon.className = 'w-12 h-12 rounded-lg flex items-center justify-center';
+      
+      if (fileExtension === 'pdf') {
+        fileIcon.className += ' bg-red-100';
+        fileIcon.innerHTML = '<i class="fas fa-file-pdf text-red-500 text-xl"></i>';
+      } else if (fileExtension === 'docx') {
+        fileIcon.className += ' bg-blue-100';
+        fileIcon.innerHTML = '<i class="fas fa-file-word text-blue-500 text-xl"></i>';
+      } else if (fileExtension === 'mp4') {
+        fileIcon.className += ' bg-purple-100';
+        fileIcon.innerHTML = '<i class="fas fa-file-video text-purple-500 text-xl"></i>';
+      } else if (['jpg', 'jpeg', 'png'].includes(fileExtension)) {
+        fileIcon.className += ' bg-green-100';
+        fileIcon.innerHTML = '<i class="fas fa-file-image text-green-500 text-xl"></i>';
+      } else {
+        fileIcon.className += ' bg-gray-100';
+        fileIcon.innerHTML = '<i class="fas fa-file text-gray-500 text-xl"></i>';
+      }
+
+      fileName.textContent = file.name;
+      fileSize.textContent = `${fileSizeMB} MB`;
+
+      uploadPlaceholder.classList.add('hidden');
+      filePreview.classList.remove('hidden');
+    }
+
+    removeFileBtn.addEventListener('click', () => {
+      fileInput.value = '';
+      uploadPlaceholder.classList.remove('hidden');
+      filePreview.classList.add('hidden');
+      
+      showNotification('Archivo removido', 'info');
+    });
+
+    // Delete resource functionality
+    deleteBtn.addEventListener('click', function() {
+      const resourceTitle = this.dataset.resourceTitle;
+      document.getElementById('delete-resource-name').textContent = resourceTitle;
+      deleteModal.classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+    });
+
+    cancelDelete.addEventListener('click', function() {
+      deleteModal.classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
+    });
+
+    confirmDelete.addEventListener('click', function() {
+      const resourceId = deleteBtn.dataset.resourceId;
+      
+      this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Eliminando...';
+      this.disabled = true;
+      
+      // Create form for deletion
+      const deleteForm = document.createElement('form');
+      deleteForm.method = 'POST';
+      deleteForm.action = `/recursos/eliminar/${resourceId}/`;
+      
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+      if (csrfToken) {
+        deleteForm.appendChild(csrfToken.cloneNode());
+      }
+      
+      document.body.appendChild(deleteForm);
+      deleteForm.submit();
+    });
+
+    // Close delete modal when clicking outside
+    deleteModal.addEventListener('click', function(e) {
+      if (e.target === deleteModal) {
+        deleteModal.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+      }
+    });
+
+    // Preview changes functionality
+    previewBtn.addEventListener('click', function() {
+      const formData = new FormData(form);
+      const changes = [];
+      
+      // Compare current values with original (you'd need to store original values)
+      const titulo = formData.get('titulo');
+      const descripcion = formData.get('descripcion');
+      const categoria = formData.get('categoria');
+      
+      if (titulo) changes.push(`Título: ${titulo}`);
+      if (descripcion) changes.push(`Descripción actualizada`);
+      if (categoria) changes.push(`Categoría: ${categoria}`);
+      if (fileInput.files.length > 0) changes.push(`Nuevo archivo: ${fileInput.files[0].name}`);
+      
+      if (changes.length > 0) {
+        const changesList = changes.map(change => `• ${change}`).join('\n');
+        alert(`Cambios a guardar:\n\n${changesList}`);
+      } else {
+        showNotification('No se detectaron cambios', 'info');
+      }
+    });
+
+    // Form submission with validation
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      if (validateForm()) {
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Guardando Cambios...';
+        submitBtn.disabled = true;
+        
+        // Add change notes to form data if provided
+        const changeNotes = document.getElementById('change-notes').value;
+        if (changeNotes.trim()) {
+          const hiddenInput = document.createElement('input');
+          hiddenInput.type = 'hidden';
+          hiddenInput.name = 'change_notes';
+          hiddenInput.value = changeNotes;
+          form.appendChild(hiddenInput);
+        }
+        
+        // Simulate processing time
+        setTimeout(() => {
+          form.submit();
+        }, 1000);
+      }
+    });
+
+    function validateForm() {
+      let isValid = true;
+      const errors = [];
+
+      // Validate title
+      const titleField = document.querySelector('input[name="titulo"]');
+      if (!titleField.value.trim()) {
+        errors.push('El título es obligatorio');
+        isValid = false;
+      }
+
+      // Validate category
+      const categoryField = document.querySelector('select[name="categoria"]');
+      if (!categoryField.value) {
+        errors.push('Debe seleccionar una categoría');
+        isValid = false;
+      }
+
+      // Validate description
+      if (!descriptionField.value.trim()) {
+        errors.push('La descripción es obligatoria');
+        isValid = false;
+      }
+
+      if (!isValid) {
+        showNotification('Por favor, complete todos los campos obligatorios', 'error');
+        errors.forEach(error => console.log(error));
+      }
+
+      return isValid;
+    }
+
+    // Track changes for better UX
+    let hasUnsavedChanges = false;
+    const originalFormData = new FormData(form);
+    
+    form.addEventListener('input', function() {
+      hasUnsavedChanges = true;
+      updateSaveButtonState();
+    });
+
+    function updateSaveButtonState() {
+      if (hasUnsavedChanges) {
+        submitBtn.classList.remove('from-gray-400', 'to-gray-500');
+        submitBtn.classList.add('from-primary', 'to-accent');
+        submitBtn.disabled = false;
+      }
+    }
+
+    // Warn about unsaved changes
+    window.addEventListener('beforeunload', function(e) {
+      if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = '';
+        return 'Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?';
+      }
+    });
+
+    // Auto-save functionality
+    let autoSaveTimer;
+    function startAutoSave() {
+      const resourceId = {{ recurso.pk }};
+      autoSaveTimer = setInterval(() => {
+        if (hasUnsavedChanges) {
+          const formData = new FormData(form);
+          
+          // Save to localStorage as backup
+          const formState = {
+            titulo: formData.get('titulo'),
+            categoria: formData.get('categoria'),
+            descripcion: formData.get('descripcion'),
+            contenido_adicional: formData.get('contenido_adicional'),
+            activo: formData.get('activo'),
+            timestamp: new Date().toISOString()
+          };
+          
+          localStorage.setItem(`recurso_edit_${resourceId}`, JSON.stringify(formState));
+          console.log('Auto-guardado realizado');
+          
+          // Show subtle indicator
+          const indicator = document.createElement('div');
+          indicator.className = 'fixed top-4 right-4 bg-green-100 text-green-700 px-3 py-1 rounded-lg text-sm';
+          indicator.textContent = 'Cambios guardados automáticamente';
+          document.body.appendChild(indicator);
+          
+          setTimeout(() => indicator.remove(), 2000);
+        }
+      }, 60000); // Every minute
+    }
+
+    // Load auto-saved data
+    function loadAutoSave() {
+      const resourceId = {{ recurso.pk }};
+      const savedData = localStorage.getItem(`recurso_edit_${resourceId}`);
+      if (savedData) {
+        try {
+          const data = JSON.parse(savedData);
+          const saveTime = new Date(data.timestamp);
+          const now = new Date();
+          const minutesDiff = (now - saveTime) / (1000 * 60);
+          
+          if (minutesDiff < 60) { // Only load if less than 1 hour old
+            if (confirm('Se encontraron cambios guardados automáticamente. ¿Desea cargarlos?')) {
+              if (data.titulo) document.querySelector('input[name="titulo"]').value = data.titulo;
+              if (data.categoria) document.querySelector('select[name="categoria"]').value = data.categoria;
+              if (data.descripcion) document.querySelector('textarea[name="descripcion"]').value = data.descripcion;
+              if (data.contenido_adicional) document.querySelector('textarea[name="contenido_adicional"]').value = data.contenido_adicional;
+              if (data.activo !== null) document.querySelector('input[name="activo"]').checked = data.activo === 'on';
+              
+              updateCounter();
+              hasUnsavedChanges = true;
+              updateSaveButtonState();
+              
+              showNotification('Datos auto-guardados cargados', 'info');
+            }
+          }
+        } catch (e) {
+          console.error('Error loading auto-save:', e);
+        }
+      }
+    }
+
+    // Enhanced notification system
+    function showNotification(message, type = "info") {
+      const notification = document.createElement("div");
+      const colors = {
+        success: "from-primary to-accent",
+        error: "from-red-500 to-pink-500",
+        warning: "from-warning to-primary",
+        info: "from-secondary to-accent",
+      };
+
+      const icons = {
+        success: "fa-check-circle",
+        error: "fa-exclamation-triangle",
+        warning: "fa-exclamation-circle",
+        info: "fa-info-circle",
+      };
+
+      notification.innerHTML = `
+        <div class="fixed top-24 right-8 z-50 animate-slide-in-right">
+          <div class="bg-gradient-to-r ${colors[type]} text-white px-6 py-4 rounded-2xl shadow-lg backdrop-blur-sm max-w-sm">
+            <div class="flex items-center space-x-3">
+              <i class="fas ${icons[type]} text-xl"></i>
+              <span class="font-semibold">${message}</span>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(notification);
+
+      setTimeout(() => {
+        notification.style.transform = "translateX(100%)";
+        notification.style.opacity = "0";
+        setTimeout(() => notification.remove(), 300);
+      }, 4000);
+    }
+
+    // Initialize
+    loadAutoSave();
+    startAutoSave();
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+      // Ctrl/Cmd + S for save
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        if (hasUnsavedChanges) {
+          submitBtn.click();
+        }
+      }
+      
+      // Ctrl/Cmd + P for preview
+      if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+        e.preventDefault();
+        previewBtn.click();
+      }
+      
+      // Escape to cancel
+      if (e.key === 'Escape') {
+        if (!deleteModal.classList.contains('hidden')) {
+          cancelDelete.click();
+        }
+      }
+    });
+
+    // Page animations
+    const sections = document.querySelectorAll('.glass');
+    sections.forEach((section, index) => {
+      section.style.opacity = '0';
+      section.style.transform = 'translateY(30px)';
+      
+      setTimeout(() => {
+        section.style.transition = 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+        section.style.opacity = '1';
+        section.style.transform = 'translateY(0)';
+      }, index * 200);
+    });
+
+    // Clear auto-save on successful submission
+    form.addEventListener('submit', function() {
+      if (this.checkValidity()) {
+        const resourceId = {{ recurso.pk }};
+        localStorage.removeItem(`recurso_edit_${resourceId}`);
+        hasUnsavedChanges = false;
+      }
+    });
+
+    console.log("🌿 Editar Recurso - Sistema inicializado");
+  });
+
+  // CSS animations
+  const style = document.createElement('style');
+  style.textContent = `
+    .animate-slide-in-right {
+      animation: slideInRight 0.6s ease-out;
+    }
+    
+    .animate-scale-in {
+      animation: scaleIn 0.4s ease-out;
+    }
+    
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes scaleIn {
+      from {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    
+    .file-upload-area {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .file-upload-area:hover {
+      transform: translateY(-2px);
+    }
+    
+    /* Enhanced form styling */
+    input:focus, textarea:focus, select:focus {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(34, 197, 94, 0.15);
+    }
+    
+    /* Custom checkbox styling */
+    input[type="checkbox"] {
+      width: 1.25rem;
+      height: 1.25rem;
+      border: 2px solid #22c55e;
+      border-radius: 0.375rem;
+      background-color: transparent;
+      cursor: pointer;
+    }
+    
+    input[type="checkbox"]:checked {
+      background-color: #22c55e;
+      background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m13.854 3.646-7.5 7.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6 10.293l7.146-7.147a.5.5 0 0 1 .708.708z'/%3e%3c/svg%3e");
+    }
+    
+    /* Unsaved changes indicator */
+    .has-changes {
+      position: relative;
+    }
+    
+    .has-changes::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 8px;
+      height: 8px;
+      background: #f59e0b;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  `;
+  
+  document.head.appendChild(style);
+</script>
+
+{% endblock %}

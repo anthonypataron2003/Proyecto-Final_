@@ -1,0 +1,362 @@
+<!-- templates/analisis/email/reporte_completo.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Análisis Nutricional - {{ analisis.nombre_paciente }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        .email-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        
+        .header .subtitle {
+            margin: 10px 0 0 0;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .patient-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 5px solid #28a745;
+        }
+        
+        .patient-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #28a745;
+            margin-bottom: 15px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            margin-right: 10px;
+            color: #495057;
+            min-width: 120px;
+        }
+        
+        .info-value {
+            color: #212529;
+        }
+        
+        .estado-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .estado-0 { background: #f8d7da; color: #721c24; }
+        .estado-1 { background: #fff3cd; color: #856404; }
+        .estado-2 { background: #d4edda; color: #155724; }
+        
+        .confianza-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin: 25px 0;
+            border: 2px solid #dee2e6;
+        }
+        
+        .confianza-valor {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .confianza-alta { color: #28a745; }
+        .confianza-media { color: #ffc107; }
+        .confianza-baja { color: #dc3545; }
+        
+        .section {
+            margin-bottom: 30px;
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            background: linear-gradient(135deg, #495057, #6c757d);
+            color: white;
+            padding: 15px 20px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .section-content {
+            padding: 20px;
+        }
+        
+        .recommendation-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .recommendation-item {
+            background: #f8f9fa;
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+            position: relative;
+        }
+        
+        .recommendation-item::before {
+            content: "✓";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .plan-alimentario {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid #17a2b8;
+            line-height: 1.8;
+        }
+        
+        .footer {
+            background: #343a40;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .footer .logo {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .footer .contact {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-top: 15px;
+        }
+        
+        .warning-notice {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #856404;
+        }
+        
+        .warning-notice strong {
+            color: #d68910;
+        }
+        
+        @media (max-width: 600px) {
+            .content { padding: 20px; }
+            .header { padding: 30px 20px; }
+            .info-grid { grid-template-columns: 1fr; }
+            .patient-card { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🔬 NutriScan IA</h1>
+            <p class="subtitle">Reporte de Análisis Nutricional con Inteligencia Artificial</p>
+        </div>
+        
+        <!-- Contenido Principal -->
+        <div class="content">
+            <!-- Información del Paciente -->
+            <div class="patient-card">
+                <div class="patient-name">{{ analisis.nombre_paciente }}</div>
+                
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">👶 Edad:</span>
+                        <span class="info-value">{{ analisis.edad_meses }} meses ({{ analisis.edad_anos }} años)</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">⚧ Género:</span>
+                        <span class="info-value">{{ analisis.get_genero_display }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">📅 Fecha Análisis:</span>
+                        <span class="info-value">{{ analisis.fecha_analisis|date:"d/m/Y H:i" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">👨‍⚕️ Procesado por:</span>
+                        <span class="info-value">
+                            {% if analisis.procesado_por %}
+                                {{ analisis.procesado_por.get_full_name|default:analisis.procesado_por.username }}
+                            {% else %}
+                                Sistema Automático
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <div class="info-item" style="justify-content: center;">
+                        <span class="info-label">🏥 Estado Nutricional:</span>
+                        <span class="estado-badge estado-{{ analisis.estado_nutricional }}">
+                            {{ analisis.get_estado_nutricional_display }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Confianza del Modelo -->
+            <div class="confianza-section">
+                <h3 style="margin: 0 0 10px 0; color: #495057;">🎯 Confianza del Modelo de IA</h3>
+                <div class="confianza-valor confianza-{% if analisis.confianza >= 0.8 %}alta{% elif analisis.confianza >= 0.6 %}media{% else %}baja{% endif %}">
+                    {{ analisis.confianza_porcentaje }}
+                </div>
+                <p style="margin: 0; color: #6c757d; font-size: 14px;">
+                    {% if analisis.confianza >= 0.8 %}
+                        ✅ Confianza Alta - Resultado muy confiable
+                    {% elif analisis.confianza >= 0.6 %}
+                        ⚠️ Confianza Media - Se recomienda evaluación adicional
+                    {% else %}
+                        ❌ Confianza Baja - Requiere evaluación médica profesional
+                    {% endif %}
+                </p>
+                
+                {% if analisis.severidad %}
+                <div style="margin-top: 15px;">
+                    <span style="color: #495057; font-weight: 600;">🔍 Severidad:</span>
+                    <strong style="color: #dc3545;">{{ analisis.get_severidad_display }}</strong>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Recomendaciones -->
+            {% if analisis.recomendaciones_nutricionales %}
+            {% for categoria, recomendaciones in analisis.recomendaciones_nutricionales.items %}
+            <div class="section">
+                <div class="section-header">
+                    {% if categoria == 'alimentarias' %}🍎 Recomendaciones Alimentarias
+                    {% elif categoria == 'medicas' %}🏥 Recomendaciones Médicas
+                    {% else %}📋 Plan de Seguimiento{% endif %}
+                </div>
+                <div class="section-content">
+                    <ul class="recommendation-list">
+                        {% for recomendacion in recomendaciones %}
+                        <li class="recommendation-item">{{ recomendacion }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+            
+            <!-- Plan Alimentario -->
+            {% if analisis.plan_alimentario %}
+            <div class="section">
+                <div class="section-header">🍽️ Plan Alimentario Personalizado</div>
+                <div class="section-content">
+                    <div class="plan-alimentario">
+                        {{ analisis.plan_alimentario|linebreaks }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Observaciones Adicionales -->
+            {% if analisis.observaciones_adicionales %}
+            <div class="section">
+                <div class="section-header">📝 Observaciones Adicionales</div>
+                <div class="section-content">
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; line-height: 1.6;">
+                        {{ analisis.observaciones_adicionales|linebreaks }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Aviso Médico Importante -->
+            <div class="warning-notice">
+                <strong>⚠️ Aviso Médico Importante:</strong><br>
+                Este reporte ha sido generado automáticamente por un sistema de inteligencia artificial y tiene fines informativos únicamente. 
+                <strong>NO sustituye el diagnóstico, tratamiento o consejo médico profesional.</strong> 
+                Siempre consulte con un pediatra o nutricionista calificado para obtener evaluación y tratamiento médico apropiado.
+            </div>
+            
+            <!-- Información Técnica -->
+            <div style="background: #f8f9fa; border-radius: 8px; padding: 15px; margin-top: 20px; border: 1px solid #dee2e6;">
+                <h4 style="margin: 0 0 10px 0; color: #495057;">🔧 Información Técnica</h4>
+                <div style="font-size: 12px; color: #6c757d; font-family: monospace;">
+                    <div><strong>ID del Análisis:</strong> {{ analisis.id }}</div>
+                    <div><strong>Fecha de Procesamiento:</strong> {{ analisis.fecha_procesamiento|date:"d/m/Y H:i"|default:"N/A" }}</div>
+                    <div><strong>Versión del Sistema:</strong> NutriScan IA v2.1</div>
+                    <div><strong>Fecha del Reporte:</strong> {{ fecha_envio|date:"d/m/Y H:i" }}</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <div class="logo">🔬 NutriScan IA</div>
+            <p style="margin: 10px 0;">Sistema de Análisis Nutricional con Inteligencia Artificial</p>
+            <div class="contact">
+                📧 soporte@nutriscan.com | 🌐 www.nutriscan.com<br>
+                📞 +1 (555) 123-4567 | 🏢 Instituto de Nutrición Avanzada
+            </div>
+            <p style="margin: 15px 0 0 0; font-size: 12px; opacity: 0.7;">
+                Este email fue enviado a {{ usuario.email }} el {{ fecha_envio|date:"d/m/Y H:i" }}
+            </p>
+        </div>
+    </div>
+</body>
+</html>

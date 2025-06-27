@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}NutriScan Kids{% endblock %}</title>
+    {% load static %}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#22C55E",     // Verde principal
+              secondary: "#16A34A",   // Verde secundario más oscuro
+              accent: "#10B981",      // Verde esmeralda
+              success: "#15803D",     // Verde éxito
+              warning: "#84CC16",     // Verde lima
+              dark: "#14532D",        // Verde muy oscuro
+              light: "#F0FDF4",       // Verde muy claro
+              neutral: "#F8FAFC",     // Blanco neutro
+            },
+            fontFamily: {
+              display: ["Inter", "system-ui", "sans-serif"],
+            },
+            animation: {
+              float: "float 6s ease-in-out infinite",
+              glow: "glow 2s ease-in-out infinite alternate",
+              "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+              "bounce-slow": "bounce 3s infinite",
+              wiggle: "wiggle 1s ease-in-out infinite",
+              "slide-up": "slideUp 0.5s ease-out",
+              "slide-in-right": "slideInRight 0.6s ease-out",
+              "fade-in": "fadeIn 0.8s ease-out",
+              "scale-in": "scaleIn 0.4s ease-out",
+              "rotate-slow": "rotate 20s linear infinite",
+              "gradient-x": "gradient-x 15s ease infinite",
+              "gradient-y": "gradient-y 15s ease infinite",
+              "gradient-xy": "gradient-xy 15s ease infinite",
+              shimmer: "shimmer 2.5s linear infinite",
+              morph: "morph 8s ease-in-out infinite",
+              blob: "blob 7s infinite",
+            },
+            backdropBlur: {
+              xs: "2px",
+              xl: "24px",
+            },
+            boxShadow: {
+              glow: "0 0 20px rgba(34, 197, 94, 0.3)",
+              "glow-lg": "0 0 40px rgba(34, 197, 94, 0.4)",
+              "inner-glow": "inset 0 0 20px rgba(34, 197, 94, 0.1)",
+              neumorphism: "20px 20px 60px #d1d9e6, -20px -20px 60px #ffffff",
+              "neumorphism-inset":
+                "inset 20px 20px 60px #d1d9e6, inset -20px -20px 60px #ffffff",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap");
+
+      * {
+        font-family: "Inter", system-ui, -apple-system, sans-serif;
+      }
+
+      /* Keyframes */
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px) rotate(0deg);
+        }
+        33% {
+          transform: translateY(-10px) rotate(1deg);
+        }
+        66% {
+          transform: translateY(-5px) rotate(-1deg);
+        }
+      }
+
+      @keyframes glow {
+        from {
+          box-shadow: 0 0 20px rgba(34, 197, 94, 0.2),
+            0 0 40px rgba(34, 197, 94, 0.1);
+        }
+        to {
+          box-shadow: 0 0 40px rgba(34, 197, 94, 0.4),
+            0 0 80px rgba(34, 197, 94, 0.2);
+        }
+      }
+
+      @keyframes wiggle {
+        0%,
+        7% {
+          transform: rotateZ(0);
+        }
+        15% {
+          transform: rotateZ(-15deg);
+        }
+        20% {
+          transform: rotateZ(10deg);
+        }
+        25% {
+          transform: rotateZ(-10deg);
+        }
+        30% {
+          transform: rotateZ(6deg);
+        }
+        35% {
+          transform: rotateZ(-4deg);
+        }
+        40%,
+        100% {
+          transform: rotateZ(0);
+        }
+      }
+
+      @keyframes slideUp {
+        from {
+          transform: translateY(100px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes slideInRight {
+        from {
+          transform: translateX(100px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes scaleIn {
+        from {
+          transform: scale(0.8);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      @keyframes gradient-x {
+        0%,
+        100% {
+          transform: translateX(0%);
+        }
+        50% {
+          transform: translateX(100%);
+        }
+      }
+
+      @keyframes gradient-y {
+        0%,
+        100% {
+          transform: translateY(0%);
+        }
+        50% {
+          transform: translateY(100%);
+        }
+      }
+
+      @keyframes gradient-xy {
+        0%,
+        100% {
+          transform: translate(0%, 0%);
+        }
+        25% {
+          transform: translate(100%, 0%);
+        }
+        50% {
+          transform: translate(100%, 100%);
+        }
+        75% {
+          transform: translate(0%, 100%);
+        }
+      }
+
+      @keyframes shimmer {
+        0% {
+          background-position: -468px 0;
+        }
+        100% {
+          background-position: 468px 0;
+        }
+      }
+
+      @keyframes morph {
+        0%,
+        100% {
+          border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+        }
+        34% {
+          border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%;
+        }
+        67% {
+          border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%;
+        }
+      }
+
+      @keyframes blob {
+        0% {
+          transform: translate(0px, 0px) scale(1);
+        }
+        33% {
+          transform: translate(30px, -50px) scale(1.1);
+        }
+        66% {
+          transform: translate(-20px, 20px) scale(0.9);
+        }
+        100% {
+          transform: translate(0px, 0px) scale(1);
+        }
+      }
+
+      /* Glass morphism - Actualizado para tema blanco y verde */
+      .glass {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(34, 197, 94, 0.2);
+      }
+
+      .glass-dark {
+        background: rgba(20, 83, 45, 0.9);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+      }
+
+      /* Neumorphism */
+      .neumorphism {
+        background: #f0fdf4;
+        box-shadow: 20px 20px 60px #d1d9e6, -20px -20px 60px #ffffff;
+      }
+
+      .neumorphism-inset {
+        background: #f0fdf4;
+        box-shadow: inset 20px 20px 60px #d1d9e6, inset -20px -20px 60px #ffffff;
+      }
+
+      /* Gradient backgrounds - Actualizado para tema verde */
+      .bg-mesh {
+        background-color: #f0fdf4;
+        background-image: radial-gradient(
+            at 40% 20%,
+            rgba(34, 197, 94, 0.1) 0px,
+            transparent 50%
+          ),
+          radial-gradient(
+            at 80% 0%,
+            rgba(16, 185, 129, 0.1) 0px,
+            transparent 50%
+          ),
+          radial-gradient(
+            at 0% 50%,
+            rgba(21, 128, 61, 0.1) 0px,
+            transparent 50%
+          ),
+          radial-gradient(
+            at 80% 50%,
+            rgba(132, 204, 22, 0.1) 0px,
+            transparent 50%
+          ),
+          radial-gradient(
+            at 0% 100%,
+            rgba(22, 163, 74, 0.1) 0px,
+            transparent 50%
+          ),
+          radial-gradient(
+            at 80% 100%,
+            rgba(34, 197, 94, 0.1) 0px,
+            transparent 50%
+          ),
+          radial-gradient(
+            at 0% 0%,
+            rgba(16, 185, 129, 0.1) 0px,
+            transparent 50%
+          );
+      }
+
+      /* Shimmer effect */
+      .shimmer {
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(34, 197, 94, 0.4),
+          transparent
+        );
+        background-size: 200% 100%;
+        animation: shimmer 2s infinite;
+      }
+
+      /* Hover effects */
+      .hover-lift {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .hover-lift:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(34, 197, 94, 0.2);
+      }
+
+      /* Custom scrollbar - Verde */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: rgba(34, 197, 94, 0.1);
+        border-radius: 10px;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: linear-gradient(45deg, #22c55e, #16a34a);
+        border-radius: 10px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(45deg, #16a34a, #22c55e);
+      }
+
+      /* Particle system */
+      .particle {
+        position: absolute;
+        pointer-events: none;
+        border-radius: 50%;
+        animation: float 4s linear infinite;
+      }
+
+      /* Menu item hover effects */
+      .menu-item {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .menu-item::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(34, 197, 94, 0.2),
+          transparent
+        );
+        transition: left 0.5s;
+      }
+
+      .menu-item:hover::before {
+        left: 100%;
+      }
+
+      /* Loading animations */
+      .loading-dots::after {
+        content: "";
+        animation: loading-dots 1.5s infinite;
+      }
+
+      @keyframes loading-dots {
+        0%,
+        20% {
+          content: ".";
+        }
+        40% {
+          content: "..";
+        }
+        60%,
+        100% {
+          content: "...";
+        }
+      }
+
+      /* Responsive utilities */
+      @media (max-width: 768px) {
+        .mobile-optimized {
+          font-size: 0.875rem;
+        }
+      }
+    </style>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      
+      rel="stylesheet"
+    />
+
+    {% block extra_css %}{% endblock extra_css %}
+
+  </head>
+
+  <body class="bg-mesh min-h-screen overflow-x-hidden">
+    <!-- Animated Background Blobs -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+      <div
+        class="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-full animate-blob filter blur-xl"
+      ></div>
+      <div
+        class="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-r from-accent/10 to-success/10 rounded-full animate-blob animation-delay-2000 filter blur-xl"
+      ></div>
+      <div
+        class="absolute top-40 left-1/2 w-80 h-80 bg-gradient-to-r from-warning/10 to-primary/10 rounded-full animate-blob animation-delay-4000 filter blur-xl"
+      ></div>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button
+      id="mobile-menu-btn"
+      class="fixed top-6 left-6 z-50 lg:hidden glass rounded-2xl p-4 hover-lift group shadow-lg"
+    >
+      <i class="fas fa-bars text-dark text-xl group-hover:animate-wiggle"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <aside
+      id="sidebar"
+      class="fixed left-0 top-0 h-full w-80 glass-dark transform -translate-x-full lg:translate-x-0 transition-all duration-500 ease-out z-40 border-r border-primary/20"
+    >
+      <!-- Sidebar Header -->
+      <div class="p-8 border-b border-primary/20">
+        <div class="flex items-center space-x-4">
+          <div class="relative">
+            <div
+              class="w-16 h-16 bg-gradient-to-r from-primary to-secondary rounded-2xl flex items-center justify-center animate-glow rotate-45"
+            >
+              <i class="fas fa-leaf text-white text-2xl -rotate-45"></i>
+            </div>
+            <div
+              class="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-accent to-success rounded-full animate-pulse"
+            ></div>
+          </div>
+          <div>
+            <h1
+              class="text-3xl font-black bg-gradient-to-r from-white to-primary bg-clip-text text-transparent"
+            >
+              NutriScan
+            </h1>
+            <p class="text-white/80 font-medium text-sm">
+              Kids Health Platform
+            </p>
+            <div
+              class="w-20 h-1 bg-gradient-to-r from-primary to-accent rounded-full mt-2"
+            ></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="p-6 space-y-3 overflow-y-auto max-h-[calc(100vh-300px)]">
+        <!-- Dashboard -->
+        <a
+          href="{% url 'dashboard' %}"
+          class="menu-item group flex items-center space-x-4 p-4 rounded-2xl text-white/80 hover:text-white transition-all duration-300 hover:bg-white/10 hover-lift"
+        >
+          <div class="relative">
+            <div
+              class="w-12 h-12 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-xl flex items-center justify-center group-hover:from-primary/30 group-hover:to-secondary/30 transition-all duration-300 backdrop-blur-sm"
+            >
+              <i
+                class="fas fa-chart-pie text-primary group-hover:text-white transition-colors duration-300 group-hover:animate-pulse"
+              ></i>
+            </div>
+            <div
+              class="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-primary to-accent rounded-full animate-pulse opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            ></div>
+          </div>
+          <div class="flex-1">
+            <span class="font-bold text-lg">Dashboard</span>
+            <p class="text-xs text-white/50 font-medium">Panel principal</p>
+          </div>
+          <i
+            class="fas fa-arrow-right text-white/30 group-hover:text-primary transition-all duration-300 group-hover:translate-x-2"
+          ></i>
+        </a>
+
+        <!-- Análisis Nutricional -->
+        <a
+          href="{% url 'analisis:dashboard' %}"
+          class="menu-item group flex items-center space-x-4 p-4 rounded-2xl text-white/80 hover:text-white transition-all duration-300 hover:bg-white/10 hover-lift"
+        >
+          <div class="relative">
+            <div
+              class="w-12 h-12 bg-gradient-to-r from-accent/20 to-success/20 rounded-xl flex items-center justify-center group-hover:from-accent/30 group-hover:to-success/30 transition-all duration-300 backdrop-blur-sm"
+            >
+              <i
+                class="fas fa-microscope text-accent group-hover:text-white transition-colors duration-300 group-hover:animate-bounce"
+              ></i>
+            </div>
+            <div
+              class="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-accent to-success rounded-full animate-pulse opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            ></div>
+          </div>
+          <div class="flex-1">
+            <span class="font-bold text-lg">Análisis</span>
+            <p class="text-xs text-white/50 font-medium">
+              Evaluación nutricional
+            </p>
+          </div>
+          <i
+            class="fas fa-arrow-right text-white/30 group-hover:text-accent transition-all duration-300 group-hover:translate-x-2"
+          ></i>
+        </a>
+
+        <!-- Historial Médico -->
+        <a
+          href="{% url 'analisis:lista' %}"
+          class="menu-item group flex items-center space-x-4 p-4 rounded-2xl text-white/80 hover:text-white transition-all duration-300 hover:bg-white/10 hover-lift"
+        >
+          <div class="relative">
+            <div
+              class="w-12 h-12 bg-gradient-to-r from-secondary/20 to-warning/20 rounded-xl flex items-center justify-center group-hover:from-secondary/30 group-hover:to-warning/30 transition-all duration-300 backdrop-blur-sm"
+            >
+              <i
+                class="fas fa-file-medical-alt text-secondary group-hover:text-white transition-colors duration-300 group-hover:animate-pulse"
+              ></i>
+            </div>
+            <div
+              class="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-secondary to-warning rounded-full animate-pulse opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            ></div>
+          </div>
+          <div class="flex-1">
+            <span class="font-bold text-lg">Historial</span>
+            <p class="text-xs text-white/50 font-medium">Registros médicos</p>
+          </div>
+          <i
+            class="fas fa-arrow-right text-white/30 group-hover:text-secondary transition-all duration-300 group-hover:translate-x-2"
+          ></i>
+        </a>
+
+        <!-- Recursos Educativos -->
+        <a
+          href="{% url 'recursos:recursos_educativos' %}"
+          class="menu-item group flex items-center space-x-4 p-4 rounded-2xl text-white/80 hover:text-white transition-all duration-300 hover:bg-white/10 hover-lift"
+        >
+          <div class="relative">
+            <div
+              class="w-12 h-12 bg-gradient-to-r from-warning/20 to-primary/20 rounded-xl flex items-center justify-center group-hover:from-warning/30 group-hover:to-primary/30 transition-all duration-300 backdrop-blur-sm"
+            >
+              <i
+                class="fas fa-graduation-cap text-warning group-hover:text-white transition-colors duration-300 group-hover:animate-bounce"
+              ></i>
+            </div>
+            <div
+              class="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-warning to-primary rounded-full animate-pulse opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            ></div>
+          </div>
+          <div class="flex-1">
+            <span class="font-bold text-lg">Recursos</span>
+            <p class="text-xs text-white/50 font-medium">Material educativo</p>
+          </div>
+          <i
+            class="fas fa-arrow-right text-white/30 group-hover:text-warning transition-all duration-300 group-hover:translate-x-2"
+          ></i>
+        </a>
+        
+        {% if user.is_admin %}
+
+        <!-- Crear Recurso -->
+        <a
+          href="{% url 'crear_recurso' %}"
+          class="menu-item group flex items-center space-x-4 p-4 rounded-2xl text-white/80 hover:text-white transition-all duration-300 hover:bg-white/10 hover-lift"
+        >
+          <div class="relative">
+            <div
+              class="w-12 h-12 bg-gradient-to-r from-primary/20 to-success/20 rounded-xl flex items-center justify-center group-hover:from-primary/30 group-hover:to-success/30 transition-all duration-300 backdrop-blur-sm"
+            >
+              <i
+                class="fas fa-plus-circle text-primary group-hover:text-white transition-colors duration-300 group-hover:animate-spin"
+              ></i>
+            </div>
+            <div
+              class="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-primary to-success rounded-full animate-pulse opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            ></div>
+          </div>
+          <div class="flex-1">
+            <span class="font-bold text-lg">Crear</span>
+            <p class="text-xs text-white/50 font-medium">Nuevo recurso</p>
+          </div>
+          <i
+            class="fas fa-arrow-right text-white/30 group-hover:text-success transition-all duration-300 group-hover:translate-x-2"
+          ></i>
+        </a>
+
+        {% endif %}
+      </nav>
+
+      <div class="absolute bottom-0 left-0 right-0 p-1 border-t border-primary/20">
+        <div class="glass rounded-xl p-3 text-center relative overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10 animate-gradient-x"></div>
+          <div class="relative z-10">
+            <!-- User Info -->
+            <div class="w-12 h-12 bg-gradient-to-r from-primary to-secondary rounded-xl mx-auto mb-2 flex items-center justify-center animate-float shadow-glow">
+              <i class="fas fa-user text-white text-lg animate-pulse"></i>
+            </div>
+            <p class="text-sm font-bold text-dark">{{ user.first_name }}</p>
+            <p class="text-xs text-gray-600 mb-3">{{ user.email }}</p>
+            
+            <!-- Logout Button -->
+            <form method="post" action="{% url 'security:logout' %}">
+              {% csrf_token %}
+              <button
+                type="submit"
+                onclick="return confirm('¿Estás seguro de que quieres cerrar sesión?')"
+                class="group w-full bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-2 px-3 rounded-lg shadow-md hover:from-red-600 hover:to-red-700 transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2 text-sm"
+              >
+                <i class="fas fa-sign-out-alt group-hover:animate-bounce text-xs"></i>
+                <span>Cerrar Sesión</span>
+              </button>
+            </form>
+            
+            <div class="flex justify-center space-x-1 mt-2">
+              <div class="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></div>
+              <div class="w-1.5 h-1.5 bg-accent rounded-full animate-pulse animation-delay-200"></div>
+              <div class="w-1.5 h-1.5 bg-success rounded-full animate-pulse animation-delay-400"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Overlay para móvil -->
+    <div
+      id="overlay"
+      class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 lg:hidden hidden transition-opacity duration-300"
+    ></div>
+
+    <!-- Main Content -->
+    <main class="lg:ml-80 min-h-screen relative z-10">
+      <!-- Header -->
+      <header
+        class="glass border-b border-primary/20 sticky top-0 z-20 backdrop-blur-xl"
+      >
+        <div class="px-8 py-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-6">
+              <div class="hidden lg:block">
+                <h2
+                  class="text-3xl font-black bg-gradient-to-r from-dark to-primary bg-clip-text text-transparent"
+                >
+                  {% block page_title %}Bienvenido{% endblock %}
+                </h2>
+                <p class="text-gray-600 font-medium text-lg mt-1">
+                  {% block page_subtitle %}Panel de control de NutriScan Kids {% endblock %}
+                </p>
+              </div>
+            </div>
+
+            <!-- Header Actions -->
+            <div class="flex items-center space-x-6">
+              <!-- Search -->
+              <div class="hidden md:flex items-center space-x-4">
+                <div class="relative">
+                  <input
+                    type="text"
+                    placeholder="Buscar..."
+                    class="glass rounded-xl px-4 py-2 pl-10 text-dark placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-300 w-64"
+                  />
+                  <i
+                    class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                  ></i>
+                </div>
+              </div>
+
+              <!-- User Profile Dropdown -->
+              <div class="relative">
+                <button
+                  id="user-menu-btn"
+                  class="flex items-center space-x-4 glass rounded-2xl p-3 pr-6 hover:bg-primary/10 transition-all duration-300 cursor-pointer hover-lift group"
+                >
+                  <div class="relative">
+                    <div
+                      class="w-12 h-12 bg-gradient-to-r from-primary to-secondary rounded-xl flex items-center justify-center animate-glow"
+                    >
+                      <i
+                        class="fas fa-user text-white group-hover:animate-bounce"
+                      ></i>
+                    </div>
+                    <div
+                      class="absolute -bottom-1 -right-1 w-4 h-4 bg-gradient-to-r from-accent to-success rounded-full border-2 border-white animate-pulse"
+                    ></div>
+                  </div>
+                  <div class="hidden md:block">
+                    <p class="text-lg font-bold text-dark">{{ user.username }}</p>
+                    {% if user.is_superuser %}
+                    <p class="text-sm text-gray-600 font-medium">Administrador</p>
+                    {% else %}
+                    <p class="text-sm text-gray-600 font-medium">Usuario</p>
+                    {% endif %}
+                  </div>
+                  <i
+                    class="fas fa-chevron-down text-gray-500 group-hover:text-dark transition-colors duration-300"
+                  ></i>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div
+                  id="user-dropdown"
+                  class="absolute right-0 top-full mt-2 w-64 glass rounded-2xl shadow-lg border border-primary/20 hidden transform opacity-0 scale-95 transition-all duration-300 z-50"
+                >
+                  <div class="p-4">
+                    <!-- User Info in Dropdown -->
+                    <div class="flex items-center space-x-3 pb-4 border-b border-primary/20">
+                      <div class="w-12 h-12 bg-gradient-to-r from-primary to-secondary rounded-xl flex items-center justify-center">
+                        <i class="fas fa-user text-white"></i>
+                      </div>
+                      <div>
+                        <p class="font-bold text-dark">{{ user.first_name }} {{ user.last_name }}</p>
+                        <p class="text-sm text-gray-600">{{ user.email }}</p>
+                      </div>
+                    </div>
+
+                    <!-- Menu Items -->
+                    <div class="py-2 space-y-1">
+                      
+                      <a
+                        href="#"
+                        class="flex items-center space-x-3 px-3 py-2 rounded-xl hover:bg-primary/10 transition-colors duration-200 group"
+                      >
+                        <i class="fas fa-question-circle text-warning group-hover:animate-bounce"></i>
+                        <span class="text-dark font-medium">Ayuda</span>
+                      </a>
+                    </div>
+
+                    <!-- Logout Button in Dropdown -->
+                    <div class="pt-4 border-t border-primary/20">
+                      <form method="post" action="{% url 'security:logout' %}">
+                        {% csrf_token %}
+                        <button
+                          type="submit"
+                          onclick="return confirm('¿Estás seguro de que quieres cerrar sesión?')"
+                          class="group w-full flex items-center space-x-3 px-3 py-2 rounded-xl bg-gradient-to-r from-red-500 to-red-600 text-white font-medium hover:from-red-600 hover:to-red-700 transition-all duration-300 transform hover:scale-105"
+                        >
+                          <i class="fas fa-sign-out-alt group-hover:animate-bounce"></i>
+                          <span>Cerrar Sesión</span>
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content Area -->
+      <div class="p-8">
+        <!-- Breadcrumbs -->
+        <nav class="mb-8">
+          <ol class="flex items-center space-x-3 text-gray-600">
+            <li>
+              <a
+                href="{% url 'dashboard' %}"
+                class="hover:text-primary transition-colors duration-300 font-medium"
+              >
+                <i class="fas fa-home mr-2"></i>Inicio
+              </a>
+            </li>
+            {% block breadcrumbs %}{% endblock %}
+          </ol>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="relative">
+          <div
+            class="glass rounded-3xl p-12 shadow-2xl border border-primary/20 min-h-[calc(100vh-300px)] relative overflow-hidden"
+          >
+            <!-- Background Pattern -->
+            <div class="absolute inset-0 opacity-5">
+              <div
+                class="absolute inset-0"
+                style="
+                  background-image: radial-gradient(
+                    circle at 1px 1px,
+                    #22c55e 1px,
+                    transparent 0
+                  );
+                  background-size: 20px 20px;
+                "
+              ></div>
+            </div>
+
+            <!-- Content -->
+            <div class="relative z-10">
+              {% block content %}
+              <!-- Default Welcome Content -->
+              <div class="text-center py-20">
+                <!-- Hero Icon -->
+                <div class="relative mb-12 animate-float">
+                  <div class="w-40 h-40 mx-auto relative">
+                    <div
+                      class="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-3xl animate-morph opacity-20"
+                    ></div>
+                    <div
+                      class="w-full h-full bg-gradient-to-r from-primary to-secondary rounded-3xl flex items-center justify-center animate-glow relative z-10"
+                    >
+                      <i
+                        class="fas fa-seedling text-white text-6xl animate-pulse"
+                      ></i>
+                    </div>
+                    <div
+                      class="absolute -top-4 -right-4 w-8 h-8 bg-gradient-to-r from-accent to-success rounded-full animate-bounce"
+                    ></div>
+                    <div
+                      class="absolute -bottom-4 -left-4 w-6 h-6 bg-gradient-to-r from-warning to-secondary rounded-full animate-pulse"
+                    ></div>
+                  </div>
+                </div>
+
+                <!-- Hero Text -->
+                <div class="space-y-6 mb-12">
+                  <h1 class="text-7xl font-black leading-tight">
+                    <span class="text-dark">Bienvenido a</span><br />
+                    <span
+                      class="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent animate-gradient-x"
+                      >NutriScan Kids</span
+                    >
+                  </h1>
+                  <p
+                    class="text-2xl text-gray-700 font-medium max-w-4xl mx-auto leading-relaxed"
+                  >
+                    La plataforma de inteligencia artificial más avanzada para
+                    el
+                    <span class="text-primary font-bold"
+                      >seguimiento nutricional</span
+                    >
+                    y
+                    <span class="text-accent font-bold"
+                      >desarrollo saludable</span
+                    >
+                    de los niños
+                  </p>
+                </div>
+
+                <!-- CTA Buttons -->
+                <div
+                  class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6 mb-16"
+                >
+                  <a
+                    href="{% url 'analisis:nuevo' %}"
+                    class="group relative px-10 py-4 bg-gradient-to-r from-primary to-secondary text-white font-bold text-lg rounded-2xl shadow-glow hover:shadow-glow-lg transition-all duration-300 transform hover:scale-105 hover:-translate-y-2 overflow-hidden"
+                  >
+                    <span class="relative z-10 flex items-center">
+                      <i
+                        class="fas fa-rocket mr-3 group-hover:animate-bounce"
+                      ></i>
+                      Comenzar Análisis
+                    </span>
+                    <div
+                      class="absolute inset-0 bg-gradient-to-r from-secondary to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    ></div>
+                  </a>
+
+                  <a
+                    href="{% url 'recursos:recursos_educativos' %}"
+                    class="group relative px-10 py-4 glass text-dark font-bold text-lg rounded-2xl border-2 border-primary/50 hover:border-primary transition-all duration-300 transform hover:scale-105 hover:-translate-y-2 overflow-hidden"
+                  >
+                    <span class="relative z-10 flex items-center">
+                      <i
+                        class="fas fa-book-open mr-3 group-hover:animate-pulse"
+                      ></i>
+                      Explorar Recursos
+                    </span>
+                    <div
+                      class="absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    ></div>
+                  </a>
+                </div>
+
+                <!-- Feature Cards -->
+                <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                  <!-- AI Analysis -->
+                  <div
+                    class="group glass rounded-2xl p-8 hover:bg-primary/5 transition-all duration-500 hover-lift relative overflow-hidden border border-primary/10"
+                  >
+                    <div
+                      class="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    ></div>
+                    <div class="relative z-10 text-center">
+                      <div
+                        class="w-20 h-20 bg-gradient-to-r from-primary/20 to-accent/20 rounded-2xl mx-auto mb-6 flex items-center justify-center group-hover:animate-pulse"
+                      >
+                        <i
+                          class="fas fa-brain text-primary text-3xl group-hover:animate-bounce"
+                        ></i>
+                      </div>
+                      <h3 class="text-2xl font-bold text-dark mb-4">
+                        Análisis IA
+                      </h3>
+                      <p class="text-gray-600 leading-relaxed">
+                        Evaluación nutricional inteligente con algoritmos
+                        avanzados de machine learning
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Real-time Monitoring -->
+                  <div
+                    class="group glass rounded-2xl p-8 hover:bg-primary/5 transition-all duration-500 hover-lift relative overflow-hidden border border-primary/10"
+                  >
+                    <div
+                      class="absolute inset-0 bg-gradient-to-br from-accent/5 to-success/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    ></div>
+                    <div class="relative z-10 text-center">
+                      <div
+                        class="w-20 h-20 bg-gradient-to-r from-accent/20 to-success/20 rounded-2xl mx-auto mb-6 flex items-center justify-center group-hover:animate-pulse"
+                      >
+                        <i
+                          class="fas fa-heartbeat text-accent text-3xl group-hover:animate-bounce"
+                        ></i>
+                      </div>
+                      <h3 class="text-2xl font-bold text-dark mb-4">
+                        Chequeo
+                      </h3>
+                      <p class="text-gray-600 leading-relaxed">
+                        Chequeo del estado de salud del niño
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Educational Resources -->
+                  <div
+                    class="group glass rounded-2xl p-8 hover:bg-primary/5 transition-all duration-500 hover-lift relative overflow-hidden border border-primary/10"
+                  >
+                    <div
+                      class="absolute inset-0 bg-gradient-to-br from-success/5 to-warning/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    ></div>
+                    <div class="relative z-10 text-center">
+                      <div
+                        class="w-20 h-20 bg-gradient-to-r from-success/20 to-warning/20 rounded-2xl mx-auto mb-6 flex items-center justify-center group-hover:animate-pulse"
+                      >
+                        <i
+                          class="fas fa-graduation-cap text-success text-3xl group-hover:animate-bounce"
+                        ></i>
+                      </div>
+                      <h3 class="text-2xl font-bold text-dark mb-4">
+                        Recursos Educativos
+                      </h3>
+                      <p class="text-gray-600 leading-relaxed">
+                        Contenido especializado y guías personalizadas para
+                        padres y educadores
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Stats Section -->
+                <div
+                  class="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
+                >
+                  <div class="text-center">
+                    <div
+                      class="text-4xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2"
+                    >
+                      85.7%
+                    </div>
+                    <p class="text-gray-600 font-medium">Precisión IA</p>
+                  </div>
+                  <div class="text-center">
+                    <div
+                      class="text-4xl font-black bg-gradient-to-r from-success to-warning bg-clip-text text-transparent mb-2"
+                    >
+                      24/7
+                    </div>
+                    <p class="text-gray-600 font-medium">Soporte</p>
+                  </div>
+                  <div class="text-center">
+                    <div
+                      class="text-4xl font-black bg-gradient-to-r from-warning to-secondary bg-clip-text text-transparent mb-2"
+                    >
+                      100%
+                    </div>
+                    <p class="text-gray-600 font-medium">Seguro</p>
+                  </div>
+                  <div class="text-center">
+                    <div
+                      class="text-4xl font-black bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent mb-2"
+                    >
+                      ∞
+                    </div>
+                    <p class="text-gray-600 font-medium">Análisis</p>
+                  </div>
+                </div>
+              </div>
+              {% endblock %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div
+      id="loading-overlay"
+      class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden"
+    >
+      <div class="text-center">
+        <div
+          class="w-20 h-20 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4 mx-auto"
+        ></div>
+        <p class="text-white text-xl font-semibold">
+          Cargando<span class="loading-dots"></span>
+        </p>
+      </div>
+    </div>
+
+    <script src="{% static 'js/main.js' %}"></script>
+
+    {% block extra_js %}{% endblock extra_js %}
+  </body>
+</html>

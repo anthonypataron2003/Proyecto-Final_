@@ -1,0 +1,800 @@
+{% extends 'detector/base.html' %}
+{% block title %}Análisis Nutricional - NutriScan Kids{% endblock %}
+{% load static %}
+
+{% block page_title %}Análisis Nutricional{% endblock %}
+{% block page_subtitle %}Evaluación inteligente del estado nutricional{% endblock %}
+
+{% block breadcrumbs %}
+<li class="flex items-center">
+  <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+  <span class="text-primary font-medium">Análisis Nutricional</span>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8">
+  <!-- Header Section -->
+  <div class="text-center mb-12">
+    <div class="relative mb-8 animate-float">
+      <div class="w-32 h-32 mx-auto relative">
+        <div class="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 rounded-3xl animate-morph"></div>
+        <div class="w-full h-full bg-gradient-to-r from-primary to-accent rounded-3xl flex items-center justify-center animate-glow relative z-10 shadow-lg">
+          <i class="fas fa-microscope text-white text-4xl animate-pulse"></i>
+        </div>
+        <div class="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-secondary to-warning rounded-full animate-bounce"></div>
+      </div>
+    </div>
+
+    <h1 class="text-5xl font-black mb-4">
+      <span class="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+        Análisis Nutricional IA
+      </span>
+    </h1>
+    <p class="text-xl text-gray-700 font-medium max-w-3xl mx-auto leading-relaxed">
+      Sube una imagen del niño/niña y obtén un análisis nutricional completo
+      <span class="text-primary font-bold">impulsado por inteligencia artificial</span>
+    </p>
+  </div>
+
+  <!-- Main Form -->
+  <div class="grid lg:grid-cols-2 gap-8">
+    <!-- Upload Section -->
+    <div class="glass rounded-3xl p-8 hover:bg-primary/5 transition-all duration-500 relative overflow-hidden border border-primary/20 shadow-xl">
+      <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 hover:opacity-100 transition-opacity duration-500"></div>
+
+      <div class="relative z-10">
+        <div class="flex items-center mb-6">
+          <div class="w-12 h-12 bg-gradient-to-r from-primary/20 to-accent/20 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+            <i class="fas fa-cloud-upload-alt text-primary text-xl"></i>
+          </div>
+          <div>
+            <h3 class="text-2xl font-bold text-gray-800">Subir Imagen</h3>
+            <p class="text-gray-600 font-medium">Imagen clara del niño/niña</p>
+          </div>
+        </div>
+
+        <form id="analisis-form" method="post" enctype="multipart/form-data" class="space-y-6" action="{% url 'analisis:nuevo' %}">
+          {% csrf_token %}
+
+          <!-- Image Upload Area -->
+          <div class="relative">
+            <div id="drop-zone" class="border-2 border-dashed border-primary/30 rounded-2xl p-12 text-center transition-all duration-300 hover:border-primary/60 hover:bg-primary/5 cursor-pointer group bg-white/50">
+              <div class="space-y-4">
+                <div class="w-20 h-20 bg-gradient-to-r from-primary/10 to-accent/10 rounded-2xl mx-auto flex items-center justify-center group-hover:from-primary/20 group-hover:to-accent/20 transition-all duration-300 shadow-lg">
+                  <i class="fas fa-image text-primary text-3xl group-hover:animate-bounce"></i>
+                </div>
+
+                <div>
+                  <p class="text-xl font-bold text-gray-800 mb-2">Arrastra la imagen aquí</p>
+                  <p class="text-gray-600 font-medium">o haz clic para seleccionar</p>
+                  <p class="text-sm text-gray-500 mt-2">Formatos: JPG, PNG, WEBP (Máx. 10MB)</p>
+                </div>
+
+                <button type="button" class="px-6 py-3 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-xl hover:shadow-glow transition-all duration-300 transform hover:scale-105 shadow-lg">
+                  <i class="fas fa-folder-open mr-2"></i>Seleccionar Archivo
+                </button>
+              </div>
+            </div>
+
+            <input type="file" id="imagen" name="imagen" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" required />
+          </div>
+
+          <!-- Image Preview -->
+          <div id="image-preview" class="hidden">
+            <div class="glass rounded-2xl p-6 border border-primary/20 shadow-lg">
+              <div class="flex items-center justify-between mb-4">
+                <h4 class="text-lg font-bold text-gray-800">Vista Previa</h4>
+                <button type="button" id="remove-image" class="text-red-500 hover:text-red-600 transition-colors duration-300">
+                  <i class="fas fa-times text-xl"></i>
+                </button>
+              </div>
+              <div class="relative">
+                <img id="preview-img" src="" alt="Preview" class="w-full h-64 object-cover rounded-xl shadow-md" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Análisis Previo (opcional) -->
+          <div id="analisis-previo" class="hidden">
+            <div class="glass rounded-2xl p-6 border border-accent/30 shadow-lg bg-accent/5">
+              <div class="flex items-center mb-4">
+                <i class="fas fa-brain text-accent text-xl mr-3"></i>
+                <h4 class="text-lg font-bold text-gray-800">Análisis Preliminar IA</h4>
+              </div>
+              <div id="resultado-previo" class="space-y-3">
+                <!-- Los resultados se insertarán aquí dinámicamente -->
+              </div>
+              <p class="text-sm text-gray-600 mt-3">
+                <i class="fas fa-info-circle mr-2"></i>
+                Este es un análisis preliminar. Complete los datos del paciente para generar el reporte completo.
+              </p>
+            </div>
+          </div>
+
+          <!-- Patient Information -->
+          <div class="space-y-4">
+            <h4 class="text-xl font-bold text-gray-800 flex items-center">
+              <i class="fas fa-user-circle text-primary mr-3"></i>
+              Información del Paciente
+            </h4>
+
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label for="nombre_paciente" class="block text-gray-700 font-medium mb-2">
+                  <i class="fas fa-user mr-2 text-primary"></i>Nombre del Niño/Niña
+                </label>
+                <input type="text" id="nombre_paciente" name="nombre_paciente" 
+                       class="w-full glass rounded-xl px-4 py-3 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-300 border border-primary/20 hover:border-primary/40 bg-white/70" 
+                       placeholder="Ej: María García" required />
+              </div>
+
+              <div>
+                <label for="edad_meses" class="block text-gray-700 font-medium mb-2">
+                  <i class="fas fa-calendar-alt mr-2 text-accent"></i>Edad (meses)
+                </label>
+                <input type="number" id="edad_meses" name="edad_meses" min="0" max="216"
+                       class="w-full glass rounded-xl px-4 py-3 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all duration-300 border border-primary/20 hover:border-accent/40 bg-white/70" 
+                       placeholder="Ej: 36" required />
+              </div>
+            </div>
+
+            <div>
+              <label for="genero" class="block text-gray-700 font-medium mb-2">
+                <i class="fas fa-venus-mars mr-2 text-secondary"></i>Género
+              </label>
+              <select id="genero" name="genero" class="w-full glass rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-secondary/50 transition-all duration-300 border border-primary/20 hover:border-secondary/40 bg-white/70" required>
+                <option value="">Seleccionar género</option>
+                <option value="M">Masculino</option>
+                <option value="F">Femenino</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="observaciones_adicionales" class="block text-gray-700 font-medium mb-2">
+                <i class="fas fa-clipboard mr-2 text-warning"></i>Observaciones Adicionales (Opcional)
+              </label>
+              <textarea id="observaciones_adicionales" name="observaciones_adicionales" rows="3"
+                        class="w-full glass rounded-xl px-4 py-3 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-warning/50 transition-all duration-300 border border-primary/20 hover:border-warning/40 resize-none bg-white/70" 
+                        placeholder="Información adicional sobre el estado de salud, alergias, etc."></textarea>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="pt-6">
+            <button type="submit" id="submit-btn" class="w-full group relative px-8 py-4 bg-gradient-to-r from-primary to-secondary text-white font-bold text-lg rounded-2xl shadow-glow hover:shadow-glow-lg transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed">
+              <span class="relative z-10 flex items-center justify-center">
+                <i class="fas fa-brain mr-3 group-hover:animate-pulse"></i>
+                <span id="submit-text">Iniciar Análisis Nutricional</span>
+              </span>
+              <div class="absolute inset-0 bg-gradient-to-r from-secondary to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Information Panel -->
+    <div class="space-y-6">
+      <!-- Process Steps -->
+      <div class="glass rounded-3xl p-8 relative overflow-hidden border border-primary/20 shadow-xl">
+        <div class="absolute inset-0 bg-gradient-to-br from-accent/5 to-secondary/5"></div>
+        <div class="relative z-10">
+          <div class="flex items-center mb-6">
+            <div class="w-12 h-12 bg-gradient-to-r from-accent/20 to-secondary/20 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+              <i class="fas fa-cogs text-accent text-xl"></i>
+            </div>
+            <div>
+              <h3 class="text-2xl font-bold text-gray-800">Proceso de Análisis</h3>
+              <p class="text-gray-600 font-medium">Cómo funciona nuestra IA</p>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="flex items-start space-x-4 p-4 glass rounded-xl hover:bg-primary/5 transition-all duration-300 border border-primary/10 shadow-sm">
+              <div class="w-8 h-8 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center text-white font-bold text-sm animate-pulse shadow-md">1</div>
+              <div>
+                <h4 class="font-bold text-gray-800">Carga de Imagen</h4>
+                <p class="text-gray-600 text-sm">Subida segura y procesamiento inicial</p>
+              </div>
+            </div>
+
+            <div class="flex items-start space-x-4 p-4 glass rounded-xl hover:bg-primary/5 transition-all duration-300 border border-primary/10 shadow-sm">
+              <div class="w-8 h-8 bg-gradient-to-r from-accent to-secondary rounded-full flex items-center justify-center text-white font-bold text-sm animate-pulse shadow-md">2</div>
+              <div>
+                <h4 class="font-bold text-gray-800">Análisis IA</h4>
+                <p class="text-gray-600 text-sm">Evaluación nutricional automatizada</p>
+              </div>
+            </div>
+
+            <div class="flex items-start space-x-4 p-4 glass rounded-xl hover:bg-primary/5 transition-all duration-300 border border-primary/10 shadow-sm">
+              <div class="w-8 h-8 bg-gradient-to-r from-secondary to-warning rounded-full flex items-center justify-center text-white font-bold text-sm animate-pulse shadow-md">3</div>
+              <div>
+                <h4 class="font-bold text-gray-800">Recomendaciones</h4>
+                <p class="text-gray-600 text-sm">Generación de plan personalizado</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tips -->
+      <div class="glass rounded-3xl p-8 relative overflow-hidden border border-primary/20 shadow-xl">
+        <div class="absolute inset-0 bg-gradient-to-br from-warning/5 to-primary/5"></div>
+        <div class="relative z-10">
+          <div class="flex items-center mb-6">
+            <div class="w-12 h-12 bg-gradient-to-r from-warning/20 to-primary/20 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+              <i class="fas fa-lightbulb text-warning text-xl animate-pulse"></i>
+            </div>
+            <div>
+              <h3 class="text-2xl font-bold text-gray-800">Consejos para Mejores Resultados</h3>
+              <p class="text-gray-600 font-medium">Optimiza la precisión del análisis</p>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <div class="flex items-center space-x-3 text-gray-700">
+              <i class="fas fa-check-circle text-secondary text-lg"></i>
+              <span class="font-medium">Imagen clara y bien iluminada</span>
+            </div>
+            <div class="flex items-center space-x-3 text-gray-700">
+              <i class="fas fa-check-circle text-secondary text-lg"></i>
+              <span class="font-medium">Niño/niña de cuerpo completo o medio cuerpo</span>
+            </div>
+            <div class="flex items-center space-x-3 text-gray-700">
+              <i class="fas fa-check-circle text-secondary text-lg"></i>
+              <span class="font-medium">Evitar ropa muy holgada</span>
+            </div>
+            <div class="flex items-center space-x-3 text-gray-700">
+              <i class="fas fa-check-circle text-secondary text-lg"></i>
+              <span class="font-medium">Fondo neutro sin distracciones</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Privacy Notice -->
+      <div class="glass rounded-2xl p-6 border border-secondary/30 shadow-lg bg-secondary/5">
+        <div class="flex items-start space-x-3">
+          <i class="fas fa-shield-alt text-secondary text-xl mt-1"></i>
+          <div>
+            <h4 class="font-bold text-gray-800 mb-2">Privacidad y Seguridad</h4>
+            <p class="text-gray-600 text-sm leading-relaxed">
+              Todas las imágenes son procesadas de forma segura y eliminadas después del análisis. 
+              Cumplimos con las normativas de protección de datos infantiles.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Modal -->
+<div id="loading-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+  <div class="glass rounded-3xl p-12 max-w-md mx-4 text-center relative overflow-hidden border border-primary/30 shadow-2xl bg-white/90">
+    <div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 animate-pulse"></div>
+
+    <div class="relative z-10">
+      <!-- Animated Brain Icon -->
+      <div class="w-24 h-24 mx-auto mb-6 relative">
+        <div class="absolute inset-0 bg-gradient-to-r from-primary to-accent rounded-full animate-ping opacity-20"></div>
+        <div class="w-full h-full bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center animate-pulse shadow-lg">
+          <i class="fas fa-brain text-white text-3xl"></i>
+        </div>
+      </div>
+
+      <h3 class="text-2xl font-bold text-gray-800 mb-4">Analizando Imagen</h3>
+      <p class="text-gray-600 mb-6">Nuestra IA está evaluando el estado nutricional...</p>
+
+      <!-- Progress Bar -->
+      <div class="w-full bg-gray-200 rounded-full h-3 mb-4 overflow-hidden">
+        <div id="progress-bar" class="h-full bg-gradient-to-r from-primary to-accent rounded-full transition-all duration-500 relative overflow-hidden" style="width: 0%">
+          <div class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent animate-shimmer"></div>
+        </div>
+      </div>
+
+      <div class="flex justify-center space-x-2">
+        <div class="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+        <div class="w-2 h-2 bg-accent rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+        <div class="w-2 h-2 bg-secondary rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+      </div>
+
+      <p id="analysis-step" class="text-sm text-gray-600 mt-4 font-medium">Inicializando análisis...</p>
+    </div>
+  </div>
+</div>
+
+<!-- Messages Display -->
+{% if messages %}
+<div id="messages-container" class="fixed top-4 right-4 z-50 space-y-2">
+  {% for message in messages %}
+  <div class="glass rounded-xl p-4 border border-primary/20 shadow-lg 
+              {% if message.tags == 'success' %}bg-green-50 border-green-200 text-green-800
+              {% elif message.tags == 'error' %}bg-red-50 border-red-200 text-red-800
+              {% elif message.tags == 'warning' %}bg-yellow-50 border-yellow-200 text-yellow-800
+              {% else %}bg-blue-50 border-blue-200 text-blue-800{% endif %}
+              animate-fade-in">
+    <div class="flex items-center">
+      <i class="fas 
+               {% if message.tags == 'success' %}fa-check-circle
+               {% elif message.tags == 'error' %}fa-exclamation-circle
+               {% elif message.tags == 'warning' %}fa-exclamation-triangle
+               {% else %}fa-info-circle{% endif %} mr-3"></i>
+      <span class="font-medium">{{ message }}</span>
+      <button onclick="this.parentElement.parentElement.remove()" class="ml-auto text-gray-500 hover:text-gray-700">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Configuración del manejador de análisis
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('analisis-form');
+    const imageInput = document.getElementById('imagen');
+    const dropZone = document.getElementById('drop-zone');
+    const imagePreview = document.getElementById('image-preview');
+    const previewImg = document.getElementById('preview-img');
+    const removeImageBtn = document.getElementById('remove-image');
+    const loadingModal = document.getElementById('loading-modal');
+    const progressBar = document.getElementById('progress-bar');
+    const analysisStep = document.getElementById('analysis-step');
+    const submitBtn = document.getElementById('submit-btn');
+    const submitText = document.getElementById('submit-text');
+    const analisisPrevio = document.getElementById('analisis-previo');
+    const resultadoPrevio = document.getElementById('resultado-previo');
+
+    let selectedFile = null;
+    let analysisResult = null;
+
+    // Manejador de drag and drop
+    dropZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        dropZone.classList.add('border-primary/60', 'bg-primary/10');
+    });
+
+    dropZone.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        dropZone.classList.remove('border-primary/60', 'bg-primary/10');
+    });
+
+    dropZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        dropZone.classList.remove('border-primary/60', 'bg-primary/10');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            handleFileSelect(files[0]);
+        }
+    });
+
+    dropZone.addEventListener('click', function() {
+        imageInput.click();
+    });
+
+    imageInput.addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            handleFileSelect(e.target.files[0]);
+        }
+    });
+
+    removeImageBtn.addEventListener('click', function() {
+        selectedFile = null;
+        analysisResult = null;
+        imageInput.value = '';
+        imagePreview.classList.add('hidden');
+        analisisPrevio.classList.add('hidden');
+        updateSubmitButton();
+    });
+
+    function handleFileSelect(file) {
+        // Validar tipo de archivo
+        if (!file.type.match('image.*')) {
+            showMessage('Por favor selecciona una imagen válida', 'error');
+            return;
+        }
+
+        // Validar tamaño (10MB)
+        if (file.size > 10 * 1024 * 1024) {
+            showMessage('La imagen es muy grande. Máximo 10MB', 'error');
+            return;
+        }
+
+        selectedFile = file;
+        
+        // Mostrar preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            previewImg.src = e.target.result;
+            imagePreview.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+
+        // Realizar análisis preliminar
+        performPreAnalysis(file);
+        updateSubmitButton();
+    }
+
+    function performPreAnalysis(file) {
+        const formData = new FormData();
+        formData.append('imagen', file);
+
+        // Mostrar indicador de carga para análisis preliminar
+        resultadoPrevio.innerHTML = `
+            <div class="flex items-center space-x-3">
+                <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-accent"></div>
+                <span class="text-gray-600">Analizando imagen...</span>
+            </div>
+        `;
+        analisisPrevio.classList.remove('hidden');
+
+        fetch('{% url "analisis:procesar_imagen" %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.exito) {
+                analysisResult = data;
+                displayPreAnalysis(data);
+            } else {
+                resultadoPrevio.innerHTML = `
+                    <div class="flex items-center space-x-3 text-yellow-600">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>No se pudo realizar el análisis preliminar: ${data.error}</span>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            resultadoPrevio.innerHTML = `
+                <div class="flex items-center space-x-3 text-red-600">
+                    <i class="fas fa-times-circle"></i>
+                    <span>Error en el análisis preliminar</span>
+                </div>
+            `;
+        });
+    }
+
+    function displayPreAnalysis(data) {
+        const estadoClases = {
+            0: { nombre: 'Malnutrido', color: 'text-red-600', icon: 'fa-exclamation-triangle' },
+            1: { nombre: 'Sobrenutrido', color: 'text-orange-600', icon: 'fa-exclamation-circle' },
+            2: { nombre: 'Normal', color: 'text-green-600', icon: 'fa-check-circle' }
+        };
+
+        const estado = estadoClases[data.estado_nutricional] || estadoClases[2];
+        
+        resultadoPrevio.innerHTML = `
+            <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas ${estado.icon} ${estado.color} text-lg"></i>
+                        <span class="font-bold ${estado.color}">${estado.nombre}</span>
+                    </div>
+                    <span class="text-sm font-medium text-gray-600">Confianza: ${data.confianza_porcentaje}</span>
+                </div>
+                
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="h-2 bg-gradient-to-r from-accent to-secondary rounded-full transition-all duration-1000" 
+                         style="width: ${data.confianza * 100}%"></div>
+                </div>
+                
+                ${data.total_detecciones > 0 ? 
+                    `<p class="text-xs text-gray-500">Detecciones realizadas: ${data.total_detecciones}</p>` : 
+                    ''
+                }
+            </div>
+        `;
+    }
+
+    function updateSubmitButton() {
+        const hasImage = selectedFile !== null;
+        submitBtn.disabled = !hasImage;
+        
+        if (hasImage) {
+            submitText.textContent = analysisResult ? 
+                'Generar Reporte Completo' : 
+                'Iniciar Análisis Nutricional';
+        } else {
+            submitText.textContent = 'Selecciona una imagen primero';
+        }
+    }
+
+    // Manejador del formulario
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (!selectedFile) {
+            showMessage('Por favor selecciona una imagen', 'error');
+            return;
+        }
+
+        const formData = new FormData(form);
+        submitAnalysis(formData);
+    });
+
+    function submitAnalysis(formData) {
+        showLoadingModal();
+        
+        const steps = [
+            'Validando datos del paciente...',
+            'Procesando imagen con IA...',
+            'Analizando estado nutricional...',
+            'Generando recomendaciones...',
+            'Creando reporte final...'
+        ];
+        
+        let currentStep = 0;
+        const progressInterval = setInterval(() => {
+            currentStep++;
+            const progress = (currentStep / steps.length) * 100;
+            
+            progressBar.style.width = progress + '%';
+            
+            if (currentStep < steps.length) {
+                analysisStep.textContent = steps[currentStep];
+            } else {
+                clearInterval(progressInterval);
+            }
+        }, 1000);
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+            } else {
+                return response.text();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            hideLoadingModal();
+            clearInterval(progressInterval);
+            showMessage('Error al procesar el análisis', 'error');
+        });
+    }
+
+    function showLoadingModal() {
+        loadingModal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        progressBar.style.width = '0%';
+        analysisStep.textContent = 'Inicializando análisis...';
+    }
+
+    function hideLoadingModal() {
+        loadingModal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    function showMessage(message, type) {
+        const messageContainer = document.createElement('div');
+        messageContainer.className = `fixed top-4 right-4 z-50 glass rounded-xl p-4 border border-primary/20 shadow-lg animate-fade-in ${
+            type === 'success' ? 'bg-green-50 border-green-200 text-green-800' :
+            type === 'error' ? 'bg-red-50 border-red-200 text-red-800' :
+            type === 'warning' ? 'bg-yellow-50 border-yellow-200 text-yellow-800' :
+            'bg-blue-50 border-blue-200 text-blue-800'
+        }`;
+        
+        messageContainer.innerHTML = `
+            <div class="flex items-center">
+                <i class="fas ${
+                    type === 'success' ? 'fa-check-circle' :
+                    type === 'error' ? 'fa-exclamation-circle' :
+                    type === 'warning' ? 'fa-exclamation-triangle' :
+                    'fa-info-circle'
+                } mr-3"></i>
+                <span class="font-medium">${message}</span>
+                <button onclick="this.parentElement.parentElement.remove()" class="ml-auto text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        
+        document.body.appendChild(messageContainer);
+        
+        // Auto-remover después de 5 segundos
+        setTimeout(() => {
+            if (messageContainer.parentNode) {
+                messageContainer.remove();
+            }
+        }, 5000);
+    }
+
+    // Validación en tiempo real de campos
+    const nombreInput = document.getElementById('nombre_paciente');
+    const edadInput = document.getElementById('edad_meses');
+    const generoSelect = document.getElementById('genero');
+
+    nombreInput.addEventListener('input', function() {
+        validateField(this, this.value.trim().length >= 2, 'El nombre debe tener al menos 2 caracteres');
+    });
+
+    edadInput.addEventListener('input', function() {
+        const edad = parseInt(this.value);
+        validateField(this, edad >= 0 && edad <= 216, 'La edad debe estar entre 0 y 216 meses (18 años)');
+    });
+
+    generoSelect.addEventListener('change', function() {
+        validateField(this, this.value !== '', 'Por favor selecciona un género');
+    });
+
+    function validateField(field, isValid, errorMessage) {
+        const existingError = field.parentNode.querySelector('.error-message');
+        
+        if (existingError) {
+            existingError.remove();
+        }
+
+        if (!isValid && field.value !== '') {
+            field.classList.add('border-red-400', 'focus:ring-red-500');
+            field.classList.remove('border-primary/20', 'focus:ring-primary/50');
+            
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message text-red-500 text-sm mt-1 flex items-center';
+            errorDiv.innerHTML = `<i class="fas fa-exclamation-circle mr-2"></i>${errorMessage}`;
+            field.parentNode.appendChild(errorDiv);
+        } else {
+            field.classList.remove('border-red-400', 'focus:ring-red-500');
+            field.classList.add('border-primary/20', 'focus:ring-primary/50');
+        }
+    }
+
+    // Inicializar estado del botón
+    updateSubmitButton();
+
+    // Auto-remover mensajes existentes después de 5 segundos
+    const existingMessages = document.querySelectorAll('#messages-container > div');
+    existingMessages.forEach(message => {
+        setTimeout(() => {
+            if (message.parentNode) {
+                message.style.animation = 'fade-out 0.3s ease-out forwards';
+                setTimeout(() => message.remove(), 300);
+            }
+        }, 5000);
+    });
+});
+
+// Estilos CSS adicionales
+const styles = `
+<style>
+    .animate-fade-in {
+        animation: fade-in 0.3s ease-out forwards;
+    }
+    
+    .animate-fade-out {
+        animation: fade-out 0.3s ease-out forwards;
+    }
+    
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes fade-out {
+        from {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+    }
+    
+    .animate-shimmer {
+        animation: shimmer 2s infinite;
+    }
+    
+    @keyframes shimmer {
+        0% {
+            transform: translateX(-100%);
+        }
+        100% {
+            transform: translateX(100%);
+        }
+    }
+    
+    .animate-float {
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+    
+    .animate-morph {
+        animation: morph 4s ease-in-out infinite;
+    }
+    
+    @keyframes morph {
+        0%, 100% {
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+        }
+        25% {
+            border-radius: 58% 42% 75% 25% / 76% 46% 54% 24%;
+        }
+        50% {
+            border-radius: 50% 50% 33% 67% / 55% 27% 73% 45%;
+        }
+        75% {
+            border-radius: 33% 67% 58% 42% / 63% 68% 32% 37%;
+        }
+    }
+    
+    .animate-glow {
+        animation: glow 2s ease-in-out infinite alternate;
+    }
+    
+    @keyframes glow {
+        from {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+        }
+        to {
+            box-shadow: 0 0 30px rgba(147, 51, 234, 0.8);
+        }
+    }
+    
+    .shadow-glow {
+        box-shadow: 0 0 25px rgba(59, 130, 246, 0.3);
+    }
+    
+    .shadow-glow-lg {
+        box-shadow: 0 0 35px rgba(147, 51, 234, 0.5);
+    }
+    
+    .glass {
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+    }
+    
+    /* Personalización del scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: rgba(243, 244, 246, 0.5);
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #2563eb, #7c3aed);
+    }
+</style>
+`;
+
+document.head.insertAdjacentHTML('beforeend', styles);
+</script>
+{% endblock %}

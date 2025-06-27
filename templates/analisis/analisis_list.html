@@ -1,0 +1,889 @@
+{% extends 'detector/base.html' %}
+{% load static %}
+
+{% block title %}Historial de Análisis - NutriScan Kids{% endblock %}
+
+{% block page_title %}Historial de Análisis{% endblock %}
+{% block page_subtitle %}Registro completo de evaluaciones nutricionales{% endblock %}
+
+{% block breadcrumbs %}
+<li class="flex items-center">
+  <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+  <span class="text-primary font-medium">Historial de Análisis</span>
+</li>
+{% endblock %}
+
+{% block content %}
+<!-- Dashboard Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+  <!-- Total Análisis -->
+  <div class="glass rounded-2xl p-6 hover-lift group border border-primary/10 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+    <div class="relative z-10">
+      <div class="flex items-center justify-between mb-4">
+        <div class="w-12 h-12 bg-gradient-to-r from-primary/20 to-accent/20 rounded-xl flex items-center justify-center">
+          <i class="fas fa-chart-bar text-primary text-xl"></i>
+        </div>
+        <span class="text-2xl">📊</span>
+      </div>
+      <h3 class="text-3xl font-black text-dark mb-2">{{ estadisticas.total }}</h3>
+      <p class="text-gray-600 font-medium">Total de Análisis</p>
+      <div class="w-full h-1 bg-gray-200 rounded-full mt-3">
+        <div class="h-1 bg-gradient-to-r from-primary to-accent rounded-full" style="width: 100%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Malnutridos -->
+  <div class="glass rounded-2xl p-6 hover-lift group border border-red-200 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-red-50 to-orange-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+    <div class="relative z-10">
+      <div class="flex items-center justify-between mb-4">
+        <div class="w-12 h-12 bg-gradient-to-r from-red-100 to-orange-100 rounded-xl flex items-center justify-center">
+          <i class="fas fa-exclamation-triangle text-red-500 text-xl"></i>
+        </div>
+        <span class="text-2xl">⚠️</span>
+      </div>
+      <h3 class="text-3xl font-black text-red-600 mb-2">{{ estadisticas.malnutridos }}</h3>
+      <p class="text-gray-600 font-medium">Malnutridos</p>
+      <div class="w-full h-1 bg-gray-200 rounded-full mt-3">
+        <div class="h-1 bg-gradient-to-r from-red-400 to-red-600 rounded-full" style="width: {% if estadisticas.total > 0 %}{{ estadisticas.malnutridos|floatformat:0}}{% else %}0{% endif %}%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sobrenutridos -->
+  <div class="glass rounded-2xl p-6 hover-lift group border border-yellow-200 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-yellow-50 to-amber-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+    <div class="relative z-10">
+      <div class="flex items-center justify-between mb-4">
+        <div class="w-12 h-12 bg-gradient-to-r from-yellow-100 to-amber-100 rounded-xl flex items-center justify-center">
+          <i class="fas fa-arrow-up text-yellow-600 text-xl"></i>
+        </div>
+        <span class="text-2xl">⚡</span>
+      </div>
+      <h3 class="text-3xl font-black text-yellow-600 mb-2">{{ estadisticas.sobrenutridos }}</h3>
+      <p class="text-gray-600 font-medium">Sobrenutridos</p>
+      <div class="w-full h-1 bg-gray-200 rounded-full mt-3">
+        <div class="h-1 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full" style="width: {% if estadisticas.total > 0 %}{{ estadisticas.sobrenutridos|floatformat:0 }}{% else %}0{% endif %}%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confianza Promedio -->
+  <div class="glass rounded-2xl p-6 hover-lift group border border-primary/10 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-success/5 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+    <div class="relative z-10">
+      <div class="flex items-center justify-between mb-4">
+        <div class="w-12 h-12 bg-gradient-to-r from-success/20 to-primary/20 rounded-xl flex items-center justify-center">
+          <i class="fas fa-star text-success text-xl"></i>
+        </div>
+        <span class="text-2xl">⭐</span>
+      </div>
+      <h3 class="text-3xl font-black text-success mb-2">{{ estadisticas.confianza_promedio|floatformat:1}}%</h3>
+      <p class="text-gray-600 font-medium">Confianza Promedio</p>
+      <div class="w-full h-1 bg-gray-200 rounded-full mt-3">
+        <div class="h-1 bg-gradient-to-r from-success to-primary rounded-full" style="width: {{ estadisticas.confianza_promedio|floatformat:1 }}%"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Filtros y Búsqueda -->
+<div class="glass rounded-2xl p-6 mb-8 border border-primary/10">
+  <form method="GET" class="space-y-6">
+    <div class="flex items-center justify-between mb-6">
+      <h3 class="text-2xl font-bold text-dark flex items-center">
+        <i class="fas fa-filter text-primary mr-3"></i>
+        Filtros de Búsqueda
+      </h3>
+      <button type="button" onclick="limpiarFiltros()" class="text-gray-500 hover:text-primary transition-colors">
+        <i class="fas fa-refresh mr-2"></i>Limpiar filtros
+      </button>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Búsqueda por nombre -->
+      <div class="space-y-2">
+        <label class="block text-sm font-bold text-dark">
+          <i class="fas fa-search text-primary mr-2"></i>Buscar paciente
+        </label>
+        <div class="relative">
+          <input 
+            type="text" 
+            name="buscar" 
+            value="{{ busqueda }}"
+            placeholder="Nombre del paciente..."
+            class="w-full glass rounded-xl px-4 py-3 pl-12 text-dark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-300"
+          />
+          <i class="fas fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+        </div>
+      </div>
+
+      <!-- Filtro por estado nutricional -->
+      <div class="space-y-2">
+        <label class="block text-sm font-bold text-dark">
+          <i class="fas fa-heartbeat text-primary mr-2"></i>Estado Nutricional
+        </label>
+        <select name="estado" class="w-full glass rounded-xl px-4 py-3 text-dark focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-300">
+          <option value="">Todos los estados</option>
+          {% for valor, etiqueta in estados_choices %}
+            {% if valor != 999 %}
+              <option value="{{ valor }}" {% if estado_filtro == valor|stringformat:"s" %}selected{% endif %}>
+                {{ etiqueta }}
+              </option>
+            {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Filtro por severidad -->
+      <div class="space-y-2">
+        <label class="block text-sm font-bold text-dark">
+          <i class="fas fa-thermometer-half text-primary mr-2"></i>Severidad
+        </label>
+        <select name="severidad" class="w-full glass rounded-xl px-4 py-3 text-dark focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-300">
+          <option value="">Todas las severidades</option>
+          {% for valor, etiqueta in severidad_choices %}
+            <option value="{{ valor }}" {% if severidad_filtro == valor %}selected{% endif %}>
+              {{ etiqueta }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Botón de búsqueda -->
+      <div class="flex items-end">
+        <button 
+          type="submit" 
+          class="w-full bg-gradient-to-r from-primary to-secondary text-white font-bold py-3 px-6 rounded-xl shadow-glow hover:shadow-glow-lg transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 flex items-center justify-center space-x-2"
+        >
+          <i class="fas fa-search"></i>
+          <span>Buscar</span>
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Lista de Análisis -->
+<div class="glass rounded-2xl border border-primary/10 overflow-hidden">
+  <!-- Header -->
+  <div class="bg-gradient-to-r from-primary/10 to-accent/10 p-6 border-b border-primary/20">
+    <div class="flex items-center justify-between">
+      <h3 class="text-2xl font-bold text-dark flex items-center">
+        <i class="fas fa-list text-primary mr-3"></i>
+        Análisis Registrados
+        <span class="ml-3 px-3 py-1 bg-primary/20 text-primary text-sm font-bold rounded-full">
+          {{ page_obj.paginator.count }}
+        </span>
+      </h3>
+      
+      <a 
+        href="{% url 'analisis:nuevo' %}"
+        class="bg-gradient-to-r from-primary to-secondary text-white font-bold py-3 px-6 rounded-xl shadow-glow hover:shadow-glow-lg transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 flex items-center space-x-2"
+      >
+        <i class="fas fa-plus"></i>
+        <span>Nuevo Análisis</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Contenido -->
+  <div class="p-6">
+    {% if page_obj %}
+      <!-- Vista de Cards para móvil -->
+      <div class="block lg:hidden space-y-4">
+        {% for analisis in page_obj %}
+          <div class="glass rounded-xl p-6 border border-primary/10 hover-lift group relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div class="relative z-10">
+              <!-- Header del card -->
+              <div class="flex items-center justify-between mb-4">
+                <h4 class="text-xl font-bold text-dark">{{ analisis.nombre_paciente }}</h4>
+                {% if analisis.estado_nutricional == 0 %}
+                  <span class="px-3 py-1 bg-red-100 text-red-700 text-sm font-bold rounded-full">
+                    <i class="fas fa-exclamation-triangle mr-1"></i>Malnutrido
+                  </span>
+                {% elif analisis.estado_nutricional == 1 %}
+                  <span class="px-3 py-1 bg-yellow-100 text-yellow-700 text-sm font-bold rounded-full">
+                    <i class="fas fa-arrow-up mr-1"></i>Sobrenutrido
+                  </span>
+                {% elif analisis.estado_nutricional == 2 %}
+                  <span class="px-3 py-1 bg-green-100 text-green-700 text-sm font-bold rounded-full">
+                    <i class="fas fa-check-circle mr-1"></i>Normal
+                  </span>
+                {% else %}
+                  <span class="px-3 py-1 bg-gray-100 text-gray-700 text-sm font-bold rounded-full">
+                    <i class="fas fa-clock mr-1"></i>Procesando
+                  </span>
+                {% endif %}
+              </div>
+
+              <!-- Información del card -->
+              <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <p class="text-sm text-gray-600 font-medium">Edad</p>
+                  <p class="font-bold text-dark">{{ analisis.edad_meses }} meses</p>
+                </div>
+                <div>
+                  <p class="text-sm text-gray-600 font-medium">Confianza</p>
+                  <p class="font-bold text-dark">{{ analisis.confianza_porcentaje }}</p>
+                </div>
+                <div>
+                  <p class="text-sm text-gray-600 font-medium">Fecha</p>
+                  <p class="font-bold text-dark">{{ analisis.fecha_analisis|date:"d/m/Y" }}</p>
+                </div>
+                <div>
+                  <p class="text-sm text-gray-600 font-medium">Severidad</p>
+                  <p class="font-bold text-dark">{{ analisis.severidad|default:"No especificada" }}</p>
+                </div>
+              </div>
+
+              <!-- Acciones -->
+              <div class="flex space-x-3">
+                <a 
+                  href="{% url 'analisis:detalle' analisis.id %}"
+                  class="flex-1 bg-gradient-to-r from-primary to-secondary text-white font-bold py-2 px-4 rounded-lg text-center transition-all duration-300 hover:scale-105"
+                >
+                  <i class="fas fa-eye mr-2"></i>Ver
+                </a>
+                <a 
+                  href="{% url 'analisis:editar' analisis.id %}"
+                  class="flex-1 bg-gradient-to-r from-accent to-success text-white font-bold py-2 px-4 rounded-lg text-center transition-all duration-300 hover:scale-105"
+                >
+                  <i class="fas fa-edit mr-2"></i>Editar
+                </a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Vista de Tabla para desktop -->
+      <div class="hidden lg:block overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-primary/20">
+              <th class="text-left py-4 px-6 font-bold text-dark">
+                <i class="fas fa-user text-primary mr-2"></i>Paciente
+              </th>
+              <th class="text-left py-4 px-6 font-bold text-dark">
+                <i class="fas fa-calendar text-primary mr-2"></i>Edad
+              </th>
+              <th class="text-left py-4 px-6 font-bold text-dark">
+                <i class="fas fa-heartbeat text-primary mr-2"></i>Estado
+              </th>
+              <th class="text-left py-4 px-6 font-bold text-dark">
+                <i class="fas fa-star text-primary mr-2"></i>Confianza
+              </th>
+              <th class="text-left py-4 px-6 font-bold text-dark">
+                <i class="fas fa-thermometer-half text-primary mr-2"></i>Severidad
+              </th>
+              <th class="text-left py-4 px-6 font-bold text-dark">
+                <i class="fas fa-clock text-primary mr-2"></i>Fecha
+              </th>
+              <th class="text-center py-4 px-6 font-bold text-dark">
+                <i class="fas fa-cogs text-primary mr-2"></i>Acciones
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for analisis in page_obj %}
+              <tr class="border-b border-gray-100 hover:bg-primary/5 transition-colors duration-300 group">
+                <td class="py-4 px-6">
+                  <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-gradient-to-r from-primary/20 to-accent/20 rounded-xl flex items-center justify-center">
+                      <i class="fas fa-child text-primary"></i>
+                    </div>
+                    <div>
+                      <p class="font-bold text-dark">{{ analisis.nombre_paciente }}</p>
+                      <p class="text-sm text-gray-600">{{ analisis.genero|default:"No especificado" }}</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-4 px-6">
+                  <span class="font-bold text-dark">{{ analisis.edad_meses }}</span>
+                  <span class="text-sm text-gray-600">meses</span>
+                </td>
+                <td class="py-4 px-6">
+                  {% if analisis.estado_nutricional == 0 %}
+                    <span class="px-3 py-1 bg-red-100 text-red-700 text-sm font-bold rounded-full inline-flex items-center">
+                      <i class="fas fa-exclamation-triangle mr-1"></i>Malnutrido
+                    </span>
+                  {% elif analisis.estado_nutricional == 1 %}
+                    <span class="px-3 py-1 bg-yellow-100 text-yellow-700 text-sm font-bold rounded-full inline-flex items-center">
+                      <i class="fas fa-arrow-up mr-1"></i>Sobrenutrido
+                    </span>
+                  {% elif analisis.estado_nutricional == 2 %}
+                    <span class="px-3 py-1 bg-green-100 text-green-700 text-sm font-bold rounded-full inline-flex items-center">
+                      <i class="fas fa-check-circle mr-1"></i>Normal
+                    </span>
+                  {% else %}
+                    <span class="px-3 py-1 bg-gray-100 text-gray-700 text-sm font-bold rounded-full inline-flex items-center">
+                      <i class="fas fa-clock mr-1"></i>Procesando
+                    </span>
+                  {% endif %}
+                </td>
+                <td class="py-4 px-6">
+                  <div class="flex items-center space-x-3">
+                    <div class="flex-1 bg-gray-200 rounded-full h-2">
+                      <div 
+                        class="bg-gradient-to-r from-primary to-success h-2 rounded-full transition-all duration-500" 
+                        style="width: {{ analisis.confianza|floatformat:1 }}%"
+                      ></div>
+                    </div>
+                    <span class="font-bold text-dark text-sm">{{ analisis.confianza_porcentaje }}</span>
+                  </div>
+                </td>
+                <td class="py-4 px-6">
+                  {% if analisis.severidad %}
+                    <span class="font-bold text-dark">{{ analisis.get_severidad_display }}</span>
+                  {% else %}
+                    <span class="text-gray-400 italic">No especificada</span>
+                  {% endif %}
+                </td>
+                <td class="py-4 px-6">
+                  <p class="font-bold text-dark">{{ analisis.fecha_analisis|date:"d/m/Y" }}</p>
+                  <p class="text-sm text-gray-600">{{ analisis.fecha_analisis|time:"H:i" }}</p>
+                </td>
+                <td class="py-4 px-6">
+                  <div class="flex items-center justify-center space-x-2">
+                    <a 
+                      href="{% url 'analisis:detalle' analisis.id %}"
+                      class="w-10 h-10 bg-gradient-to-r from-primary to-secondary text-white rounded-lg flex items-center justify-center hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-xl"
+                      title="Ver detalles"
+                    >
+                      <i class="fas fa-eye text-sm"></i>
+                    </a>
+                    <a 
+                      href="{% url 'analisis:editar' analisis.id %}"
+                      class="w-10 h-10 bg-gradient-to-r from-accent to-success text-white rounded-lg flex items-center justify-center hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-xl"
+                      title="Editar"
+                    >
+                      <i class="fas fa-edit text-sm"></i>
+                    </a>
+                    <button 
+                      onclick="confirmarEliminacion('{{ analisis.id }}', '{{ analisis.nombre_paciente }}')"
+                      class="w-10 h-10 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg flex items-center justify-center hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-xl"
+                      title="Eliminar"
+                    >
+                      <i class="fas fa-trash text-sm"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginación -->
+      {% if page_obj.has_other_pages %}
+        <div class="flex items-center justify-between mt-8 pt-6 border-t border-primary/20">
+          <div class="text-gray-600 font-medium">
+            Mostrando {{ page_obj.start_index }}-{{ page_obj.end_index }} de {{ page_obj.paginator.count }} análisis
+          </div>
+          
+          <div class="flex items-center space-x-2">
+            {% if page_obj.has_previous %}
+              <a 
+                href="?page=1{% if busqueda %}&buscar={{ busqueda }}{% endif %}{% if estado_filtro %}&estado={{ estado_filtro }}{% endif %}{% if severidad_filtro %}&severidad={{ severidad_filtro }}{% endif %}"
+                class="w-10 h-10 glass rounded-lg flex items-center justify-center hover:bg-primary/10 transition-all duration-300"
+              >
+                <i class="fas fa-angle-double-left text-gray-600"></i>
+              </a>
+              <a 
+                href="?page={{ page_obj.previous_page_number }}{% if busqueda %}&buscar={{ busqueda }}{% endif %}{% if estado_filtro %}&estado={{ estado_filtro }}{% endif %}{% if severidad_filtro %}&severidad={{ severidad_filtro }}{% endif %}"
+                class="w-10 h-10 glass rounded-lg flex items-center justify-center hover:bg-primary/10 transition-all duration-300"
+              >
+                <i class="fas fa-angle-left text-gray-600"></i>
+              </a>
+            {% endif %}
+
+            <span class="px-4 py-2 bg-gradient-to-r from-primary to-secondary text-white font-bold rounded-lg">
+              {{ page_obj.number }}
+            </span>
+
+            {% if page_obj.has_next %}
+              <a 
+                href="?page={{ page_obj.next_page_number }}{% if busqueda %}&buscar={{ busqueda }}{% endif %}{% if estado_filtro %}&estado={{ estado_filtro }}{% endif %}{% if severidad_filtro %}&severidad={{ severidad_filtro }}{% endif %}"
+                class="w-10 h-10 glass rounded-lg flex items-center justify-center hover:bg-primary/10 transition-all duration-300"
+              >
+                <i class="fas fa-angle-right text-gray-600"></i>
+              </a>
+              <a 
+                href="?page={{ page_obj.paginator.num_pages }}{% if busqueda %}&buscar={{ busqueda }}{% endif %}{% if estado_filtro %}&estado={{ estado_filtro }}{% endif %}{% if severidad_filtro %}&severidad={{ severidad_filtro }}{% endif %}"
+                class="w-10 h-10 glass rounded-lg flex items-center justify-center hover:bg-primary/10 transition-all duration-300"
+              >
+                <i class="fas fa-angle-double-right text-gray-600"></i>
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+
+    {% else %}
+      <!-- Estado vacío -->
+      <div class="text-center py-20">
+        <div class="w-32 h-32 bg-gradient-to-r from-gray-200 to-gray-300 rounded-full mx-auto mb-8 flex items-center justify-center">
+          <i class="fas fa-inbox text-gray-500 text-5xl"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-700 mb-4">No se encontraron análisis</h3>
+        <p class="text-gray-600 mb-8 max-w-md mx-auto">
+          No hay análisis nutricionales que coincidan con los filtros aplicados.
+        </p>
+        <div class="space-y-4">
+          <a 
+            href="{% url 'analisis:nuevo' %}"
+            class="inline-flex items-center space-x-2 bg-gradient-to-r from-primary to-secondary text-white font-bold py-3 px-6 rounded-xl shadow-glow hover:shadow-glow-lg transition-all duration-300 transform hover:scale-105"
+          >
+            <i class="fas fa-plus"></i>
+            <span>Crear Nuevo Análisis</span>
+          </a>
+          <br>
+          <button 
+            onclick="limpiarFiltros()"
+            class="inline-flex items-center space-x-2 glass text-dark font-bold py-3 px-6 rounded-xl border border-primary/50 hover:bg-primary/10 transition-all duration-300"
+          >
+            <i class="fas fa-refresh"></i>
+            <span>Limpiar Filtros</span>
+          </button>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Modal de Confirmación de Eliminación -->
+<div id="deleteModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+  <div class="glass rounded-2xl p-8 max-w-md w-full mx-4 border border-red-200">
+    <div class="text-center">
+      <div class="w-20 h-20 bg-gradient-to-r from-red-100 to-red-200 rounded-full mx-auto mb-6 flex items-center justify-center">
+        <i class="fas fa-exclamation-triangle text-red-600 text-3xl"></i>
+      </div>
+      <h3 class="text-2xl font-bold text-dark mb-4">Confirmar Eliminación</h3>
+      <p class="text-gray-600 mb-8">
+        ¿Estás seguro de que quieres eliminar el análisis de <strong id="patientName"></strong>? 
+        Esta acción no se puede deshacer.
+      </p>
+      <div class="flex space-x-4">
+        <button 
+          onclick="cerrarModal()"
+          class="flex-1 glass text-dark font-bold py-3 px-6 rounded-xl border border-gray-300 hover:bg-gray-50 transition-all duration-300"
+        >
+          Cancelar
+        </button>
+        <form id="deleteForm" method="POST" class="flex-1">
+          {% csrf_token %}
+          <input type="hidden" name="_method" value="DELETE">
+          <button 
+            type="submit"
+            class="w-full bg-gradient-to-r from-red-500 to-red-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:from-red-600 hover:to-red-700 transition-all duration-300 transform hover:scale-105"
+          >
+            Eliminar
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function limpiarFiltros() {
+  // Limpiar todos los filtros
+  document.querySelector('input[name="buscar"]').value = '';
+  document.querySelector('select[name="estado"]').value = '';
+  document.querySelector('select[name="severidad"]').value = '';
+  
+  // Redirigir sin parámetros
+  window.location.href = window.location.pathname;
+}
+
+function confirmarEliminacion(analisisId, nombrePaciente) {
+  document.getElementById('patientName').textContent = nombrePaciente;
+  document.getElementById('deleteForm').action = `/analisis/${analisisId}/eliminar/`;
+  document.getElementById('deleteModal').classList.remove('hidden');
+  
+  // Agregar animación de entrada
+  setTimeout(() => {
+    document.getElementById('deleteModal').classList.add('animate-fade-in');
+  }, 10);
+}
+
+function cerrarModal() {
+  const modal = document.getElementById('deleteModal');
+  modal.classList.add('animate-fade-out');
+  
+  setTimeout(() => {
+    modal.classList.add('hidden');
+    modal.classList.remove('animate-fade-in', 'animate-fade-out');
+  }, 200);
+}
+
+// Cerrar modal al hacer clic fuera
+document.getElementById('deleteModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    cerrarModal();
+  }
+});
+
+// Búsqueda en tiempo real (opcional)
+let searchTimeout;
+function buscarEnTiempoReal() {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    document.querySelector('form').submit();
+  }, 500);
+}
+
+// Auto-submit en cambio de filtros
+document.addEventListener('DOMContentLoaded', function() {
+  const selectores = document.querySelectorAll('select[name="estado"], select[name="severidad"]');
+  selectores.forEach(selector => {
+    selector.addEventListener('change', function() {
+      this.form.submit();
+    });
+  });
+  
+  // Búsqueda con Enter
+  document.querySelector('input[name="buscar"]').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      this.form.submit();
+    }
+  });
+});
+
+// Animaciones adicionales
+document.addEventListener('DOMContentLoaded', function() {
+  // Animar entrada de las cards
+  const cards = document.querySelectorAll('.hover-lift');
+  cards.forEach((card, index) => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px)';
+    
+    setTimeout(() => {
+      card.style.transition = 'all 0.5s ease-out';
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    }, index * 100);
+  });
+  
+  // Actualizar barras de progreso con animación
+  const progressBars = document.querySelectorAll('.bg-gradient-to-r');
+  progressBars.forEach(bar => {
+    if (bar.style.width) {
+      const width = bar.style.width;
+      bar.style.width = '0%';
+      setTimeout(() => {
+        bar.style.transition = 'width 1s ease-out';
+        bar.style.width = width;
+      }, 500);
+    }
+  });
+});
+
+// Función para exportar datos (opcional)
+function exportarAnalisis() {
+  // Aquí puedes implementar la funcionalidad de exportación
+  alert('Funcionalidad de exportación en desarrollo');
+}
+
+// Toast notifications
+function mostrarToast(mensaje, tipo = 'success') {
+  const toast = document.createElement('div');
+  toast.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-xl text-white font-bold shadow-lg transform translate-x-full transition-all duration-300 ${
+    tipo === 'success' ? 'bg-gradient-to-r from-green-500 to-green-600' : 
+    tipo === 'error' ? 'bg-gradient-to-r from-red-500 to-red-600' : 
+    'bg-gradient-to-r from-blue-500 to-blue-600'
+  }`;
+  
+  toast.innerHTML = `
+    <div class="flex items-center space-x-3">
+      <i class="fas fa-${tipo === 'success' ? 'check-circle' : tipo === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+      <span>${mensaje}</span>
+    </div>
+  `;
+  
+  document.body.appendChild(toast);
+  
+  // Animar entrada
+  setTimeout(() => {
+    toast.style.transform = 'translateX(0)';
+  }, 100);
+  
+  // Auto-ocultar después de 3 segundos
+  setTimeout(() => {
+    toast.style.transform = 'translateX(full)';
+    setTimeout(() => {
+      document.body.removeChild(toast);
+    }, 300);
+  }, 3000);
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+  // Ctrl/Cmd + K para focus en búsqueda
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    document.querySelector('input[name="buscar"]').focus();
+  }
+  
+  // Escape para cerrar modal
+  if (e.key === 'Escape') {
+    cerrarModal();
+  }
+});
+
+// Lazy loading para imágenes (si las hay)
+if ('IntersectionObserver' in window) {
+  const imageObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const img = entry.target;
+        img.src = img.dataset.src;
+        img.classList.remove('lazy');
+        imageObserver.unobserve(img);
+      }
+    });
+  });
+
+  document.querySelectorAll('img[data-src]').forEach(img => {
+    imageObserver.observe(img);
+  });
+}
+</script>
+
+<!-- Estilos adicionales para animaciones personalizadas -->
+<style>
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-fade-out {
+  animation: fadeOut 0.2s ease-in forwards;
+}
+
+/* Hover effects para las filas de la tabla */
+.table-row-hover {
+  position: relative;
+  overflow: hidden;
+}
+
+.table-row-hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(34, 197, 94, 0.1), transparent);
+  transition: left 0.5s;
+}
+
+.table-row-hover:hover::before {
+  left: 100%;
+}
+
+/* Estilos para elementos lazy loading */
+.lazy {
+  filter: blur(5px);
+  transition: filter 0.3s;
+}
+
+/* Mejoras para dispositivos móviles */
+@media (max-width: 768px) {
+  .mobile-card {
+    transform: translateX(0);
+    transition: transform 0.3s ease-out;
+  }
+  
+  .mobile-card.swipe-left {
+    transform: translateX(-100%);
+  }
+  
+  .mobile-card.swipe-right {
+    transform: translateX(100%);
+  }
+}
+
+/* Indicadores de estado personalizados */
+.status-indicator {
+  position: relative;
+}
+
+.status-indicator::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.status-malnutrido::after {
+  background-color: #ef4444;
+}
+
+.status-sobrenutrido::after {
+  background-color: #f59e0b;
+}
+
+.status-normal::after {
+  background-color: #10b981;
+}
+
+.status-procesando::after {
+  background-color: #6b7280;
+}
+
+/* Scrollbar personalizada para la tabla */
+.table-container {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(34, 197, 94, 0.3) transparent;
+}
+
+.table-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: rgba(34, 197, 94, 0.1);
+  border-radius: 3px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: rgba(34, 197, 94, 0.3);
+  border-radius: 3px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(34, 197, 94, 0.5);
+}
+
+/* Transiciones suaves para los filtros */
+.filter-input {
+  transition: all 0.3s ease;
+}
+
+.filter-input:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(34, 197, 94, 0.15);
+}
+
+/* Loading skeleton */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+</style>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Script adicional específico para esta página
+document.addEventListener('DOMContentLoaded', function() {
+  // Mostrar toast si hay mensajes del backend
+  {% if messages %}
+    {% for message in messages %}
+      mostrarToast('{{ message|escapejs }}', '{{ message.tags|default:"info" }}');
+    {% endfor %}
+  {% endif %}
+  
+  // Configurar tooltips
+  const tooltipElements = document.querySelectorAll('[title]');
+  tooltipElements.forEach(element => {
+    element.addEventListener('mouseenter', function() {
+      // Aquí puedes agregar lógica para tooltips personalizados
+    });
+  });
+  
+  // Agregar efecto de typing al título de la página
+  const pageTitle = document.querySelector('[data-typing]');
+  if (pageTitle) {
+    const text = pageTitle.textContent;
+    pageTitle.textContent = '';
+    let i = 0;
+    
+    function typeWriter() {
+      if (i < text.length) {
+        pageTitle.textContent += text.charAt(i);
+        i++;
+        setTimeout(typeWriter, 50);
+      }
+    }
+    
+    typeWriter();
+  }
+  
+  // Configurar refresh automático cada 5 minutos (opcional)
+  // setInterval(() => {
+  //   if (document.visibilityState === 'visible') {
+  //     location.reload();
+  //   }
+  // }, 300000);
+});
+
+// Función para compartir análisis (opcional)
+function compartirAnalisis(analisisId) {
+  if (navigator.share) {
+    navigator.share({
+      title: 'Análisis Nutricional - NutriScan Kids',
+      text: 'Revisa este análisis nutricional',
+      url: `/analisis/${analisisId}/`
+    });
+  } else {
+    // Fallback para navegadores que no soportan Web Share API
+    const url = window.location.origin + `/analisis/${analisisId}/`;
+    navigator.clipboard.writeText(url).then(() => {
+      mostrarToast('Enlace copiado al portapapeles', 'success');
+    });
+  }
+}
+
+// PWA: Service Worker registration (opcional)
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').then(registration => {
+    console.log('SW registered: ', registration);
+  }).catch(registrationError => {
+    console.log('SW registration failed: ', registrationError);
+  });
+}
+</script>
+{% endblock %}

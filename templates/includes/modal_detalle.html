@@ -1,0 +1,56 @@
+<div class="modal-content">
+    <!-- Header -->
+    <div class="modal-header">
+        <h2 class="modal-title">Detalles de Evaluación</h2>
+        <button id="modal-close" class="close">&times;</button>
+    </div>
+    
+    <!-- Tabs -->
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-tab="resultados">Resultados</div>
+            <div class="tab" data-tab="recomendaciones">Recomendaciones</div>
+        </div>
+        
+        <div class="tab-content">
+            <!-- Tab Resultados -->
+            <div class="tab-pane active" id="tab-resultados">
+                <div class="result-content">
+                    <div class="result-image">
+                        <img id="modal-imagen" src="" alt="Imagen analizada historial">
+                    </div>
+                    
+                    <div class="result-data">
+                        <div id="modal-riesgo" class="result-status status-risk"></div>
+                        
+                        <div class="result-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Fecha:</span>
+                                <span class="detail-value" id="modal-fecha"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="observations">
+                            <h4>Observaciones:</h4>
+                            <p id="modal-observaciones"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tab Recomendaciones -->
+            <div class="tab-pane" id="tab-recomendaciones">
+                <div class="recommendations-content">
+                    <h3>Plan de Seguimiento</h3>
+                    
+                    <div class="recommendations-section">
+                        <h4>Recomendaciones Personalizadas</h4>
+                        <ul class="recommendations-list" id="modal-recomendaciones">
+                            <!-- Las recomendaciones se insertarán dinámicamente -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,591 @@
+{% extends 'detector/base.html' %}
+{% load static %}
+
+{% block title %}Detalle: {{ analisis.nombre_paciente }} - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  .glass {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .estado-malnutrido { color: #dc3545; background-color: rgba(220, 53, 69, 0.1); }
+  .estado-sobrenutrido { color: #ffc107; background-color: rgba(255, 193, 7, 0.1); }
+  .estado-normal { color: #28a745; background-color: rgba(40, 167, 69, 0.1); }
+  
+  .confianza-alta { color: #28a745; }
+  .confianza-media { color: #ffc107; }
+  .confianza-baja { color: #dc3545; }
+  
+  .timeline-item {
+    border-left: 3px solid #28a745;
+    padding-left: 1.5rem;
+    margin-left: 1rem;
+    position: relative;
+  }
+  
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 0.5rem;
+    width: 12px;
+    height: 12px;
+    background-color: #28a745;
+    border-radius: 50%;
+  }
+  
+  .recomendacion-card {
+    transition: all 0.3s ease;
+    border-left: 4px solid;
+  }
+  
+  .recomendacion-alimentaria { border-left-color: #28a745; }
+  .recomendacion-medica { border-left-color: #dc3545; }
+  .recomendacion-seguimiento { border-left-color: #17a2b8; }
+  
+  .imagen-analisis {
+    max-height: 500px;
+    object-fit: cover;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  }
+  
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(40, 167, 69, 0.3); }
+    50% { box-shadow: 0 0 30px rgba(40, 167, 69, 0.6); }
+  }
+  
+  .pulse-glow {
+    animation: pulse-glow 2s infinite;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-8">
+  <!-- Header con información básica -->
+  <div class="glass rounded-3xl p-8 relative overflow-hidden border border-primary/20 shadow-xl">
+    <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5"></div>
+    
+    <div class="relative z-10 grid lg:grid-cols-3 gap-8">
+      <!-- Información del paciente -->
+      <div class="lg:col-span-2">
+        <div class="flex items-start space-x-6 mb-6">
+          <div class="w-20 h-20 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center text-white text-2xl pulse-glow">
+            <i class="fas fa-{% if analisis.genero == 'M' %}mars{% else %}venus{% endif %}"></i>
+          </div>
+          
+          <div class="flex-1">
+            <div class="flex items-center space-x-4 mb-2">
+              <h1 class="text-4xl font-bold text-gray-800">{{ analisis.nombre_paciente }}</h1>
+              <span class="px-4 py-2 rounded-full text-sm font-bold 
+                {% if analisis.estado_nutricional == 0 %}estado-malnutrido{% elif analisis.estado_nutricional == 1 %}estado-sobrenutrido{% else %}estado-normal{% endif %}">
+                {{ analisis.get_estado_nutricional_display }}
+              </span>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div class="flex items-center space-x-2">
+                <i class="fas fa-calendar-alt text-primary"></i>
+                <span class="text-gray-600">
+                  {{ analisis.edad_meses }} meses ({{ analisis.edad_anos }} años)
+                </span>
+              </div>
+              
+              <div class="flex items-center space-x-2">
+                <i class="fas fa-venus-mars text-accent"></i>
+                <span class="text-gray-600">{{ analisis.get_genero_display }}</span>
+              </div>
+              
+              <div class="flex items-center space-x-2">
+                <i class="fas fa-clock text-secondary"></i>
+                <span class="text-gray-600">{{ analisis.fecha_analisis|date:"d/m/Y H:i" }}</span>
+              </div>
+              
+              <div class="flex items-center space-x-2">
+                <i class="fas fa-user-md text-warning"></i>
+                <span class="text-gray-600">
+                  {% if analisis.procesado_por %}{{ analisis.procesado_por.username }}{% else %}Sistema{% endif %}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Métricas de confianza -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="glass rounded-xl p-4 text-center border border-primary/10">
+            <h3 class="text-sm font-medium text-gray-600 mb-2">Confianza del Modelo</h3>
+            <p class="text-3xl font-bold 
+              {% if analisis.confianza >= 0.8 %}confianza-alta{% elif analisis.confianza >= 0.6 %}confianza-media{% else %}confianza-baja{% endif %}">
+              {{ analisis.confianza_porcentaje }}
+            </p>
+          </div>
+          
+          {% if analisis.severidad %}
+          <div class="glass rounded-xl p-4 text-center border border-warning/20">
+            <h3 class="text-sm font-medium text-gray-600 mb-2">Severidad</h3>
+            <p class="text-2xl font-bold text-warning">{{ analisis.get_severidad_display }}</p>
+          </div>
+          {% endif %}
+          
+          <div class="glass rounded-xl p-4 text-center border border-secondary/20">
+            <h3 class="text-sm font-medium text-gray-600 mb-2">ID del Análisis</h3>
+            <p class="text-sm font-mono text-secondary">{{ analisis.id|slice:":8" }}...</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Imagen del análisis -->
+      <div class="lg:col-span-1">
+        {% if analisis.imagen %}
+          <div class="relative">
+            <img src="{{ analisis.imagen.url }}" 
+                 alt="Imagen de {{ analisis.nombre_paciente }}" 
+                 class="w-full imagen-analisis">
+            <div class="absolute top-4 right-4">
+              <button onclick="abrirImagenCompleta('{{ analisis.imagen.url }}')" 
+                      class="bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors">
+                <i class="fas fa-expand"></i>
+              </button>
+            </div>
+          </div>
+        {% else %}
+          <div class="w-full h-64 bg-gray-200 rounded-xl flex items-center justify-center">
+            <i class="fas fa-image text-gray-400 text-4xl"></i>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    
+    <!-- Acciones -->
+    <div class="relative z-10 flex justify-end space-x-4 mt-6 pt-6 border-t border-gray-200">
+      {% if puede_editar %}
+        <a href="{% url 'analisis:editar' analisis.id %}" 
+          class="px-6 py-3 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+          <i class="fas fa-edit mr-2"></i>Editar Análisis
+        </a>
+      {% endif %}
+      
+      <!-- Botón para enviar por email -->
+      <a href="{% url 'analisis:enviar_email' analisis.id %}" 
+        class="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105 hover:from-green-600 hover:to-emerald-700">
+        <i class="fas fa-envelope mr-2"></i>Enviar por Email
+      </a>
+
+      <a href="{% url 'analisis:descargar_pdf' analisis.id %}" 
+        class="px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white font-bold rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105 hover:from-red-600 hover:to-red-700">
+        <i class="fas fa-file-pdf mr-2"></i>Descargar PDF
+      </a>
+      
+      <button onclick="imprimirAnalisis()" 
+              class="px-6 py-3 bg-gradient-to-r from-secondary to-gray-600 text-white font-bold rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+        <i class="fas fa-print mr-2"></i>Imprimir
+      </button>
+    </div>
+
+  <!-- Recomendaciones -->
+  {% if analisis.recomendaciones_nutricionales %}
+  <div class="grid lg:grid-cols-3 gap-6">
+    {% for categoria, recomendaciones in analisis.recomendaciones_nutricionales.items %}
+      <div class="glass rounded-3xl p-6 relative overflow-hidden border border-primary/20 shadow-xl recomendacion-card recomendacion-{{ categoria }}">
+        <div class="relative z-10">
+          <div class="flex items-center mb-6">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center mr-4 shadow-lg
+              {% if categoria == 'alimentarias' %}bg-green-100 text-green-600
+              {% elif categoria == 'medicas' %}bg-red-100 text-red-600
+              {% else %}bg-blue-100 text-blue-600{% endif %}">
+              <i class="fas fa-{% if categoria == 'alimentarias' %}utensils{% elif categoria == 'medicas' %}stethoscope{% else %}clipboard-check{% endif %} text-xl"></i>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-gray-800 capitalize">{{ categoria }}</h3>
+              <p class="text-gray-600 text-sm">
+                {% if categoria == 'alimentarias' %}Recomendaciones nutricionales
+                {% elif categoria == 'medicas' %}Recomendaciones médicas
+                {% else %}Plan de seguimiento{% endif %}
+              </p>
+            </div>
+          </div>
+          
+          <div class="space-y-3">
+            {% for recomendacion in recomendaciones %}
+              <div class="flex items-start space-x-3 p-3 bg-white/50 rounded-lg hover:bg-white/70 transition-colors">
+                <i class="fas fa-check-circle text-{% if categoria == 'alimentarias' %}green{% elif categoria == 'medicas' %}red{% else %}blue{% endif %}-500 mt-1"></i>
+                <p class="text-gray-700 text-sm leading-relaxed">{{ recomendacion }}</p>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Plan alimentario -->
+  {% if analisis.plan_alimentario %}
+  <div class="glass rounded-3xl p-8 relative overflow-hidden border border-primary/20 shadow-xl">
+    <div class="absolute inset-0 bg-gradient-to-br from-green/5 to-blue/5"></div>
+    
+    <div class="relative z-10">
+      <div class="flex items-center mb-6">
+        <div class="w-12 h-12 bg-gradient-to-r from-green-100 to-blue-100 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+          <i class="fas fa-clipboard-list text-green-600 text-xl"></i>
+        </div>
+        <div>
+          <h3 class="text-2xl font-bold text-gray-800">Plan Alimentario Personalizado</h3>
+          <p class="text-gray-600">Recomendaciones específicas para {{ analisis.nombre_paciente }}</p>
+        </div>
+      </div>
+      
+      <div class="prose max-w-none">
+        <div class="bg-white/70 rounded-xl p-6 border border-gray-200">
+          {{ analisis.plan_alimentario|linebreaks }}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Observaciones adicionales -->
+  {% if analisis.observaciones_adicionales %}
+  <div class="glass rounded-3xl p-8 relative overflow-hidden border border-warning/20 shadow-xl">
+    <div class="absolute inset-0 bg-gradient-to-br from-warning/5 to-orange/5"></div>
+    
+    <div class="relative z-10">
+      <div class="flex items-center mb-6">
+        <div class="w-12 h-12 bg-gradient-to-r from-warning/20 to-orange/20 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+          <i class="fas fa-sticky-note text-warning text-xl"></i>
+        </div>
+        <div>
+          <h3 class="text-2xl font-bold text-gray-800">Observaciones Adicionales</h3>
+          <p class="text-gray-600">Notas del profesional</p>
+        </div>
+      </div>
+      
+      <div class="bg-white/70 rounded-xl p-6 border border-warning/20">
+        <p class="text-gray-700 leading-relaxed">{{ analisis.observaciones_adicionales|linebreaks }}</p>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Timeline de análisis -->
+  <div class="glass rounded-3xl p-8 relative overflow-hidden border border-primary/20 shadow-xl">
+    <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5"></div>
+    
+    <div class="relative z-10">
+      <div class="flex items-center mb-6">
+        <div class="w-12 h-12 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+          <i class="fas fa-history text-primary text-xl"></i>
+        </div>
+        <div>
+          <h3 class="text-2xl font-bold text-gray-800">Historial del Análisis</h3>
+          <p class="text-gray-600">Seguimiento y evolución</p>
+        </div>
+      </div>
+      
+      <div class="space-y-6">
+        <div class="timeline-item">
+          <div class="bg-white/70 rounded-xl p-4 border border-gray-200">
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="font-bold text-gray-800">Análisis Inicial</h4>
+              <span class="text-sm text-gray-500">{{ analisis.fecha_analisis|date:"d/m/Y H:i" }}</span>
+            </div>
+            <p class="text-gray-600 text-sm">
+              Análisis nutricional completado con {{ analisis.confianza_porcentaje }} de confianza.
+              Estado detectado: {{ analisis.get_estado_nutricional_display }}.
+            </p>
+          </div>
+        </div>
+        
+        <div class="timeline-item">
+          <div class="bg-white/70 rounded-xl p-4 border border-gray-200">
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="font-bold text-gray-800">Recomendaciones Generadas</h4>
+              <span class="text-sm text-gray-500">{{ analisis.fecha_analisis|date:"d/m/Y H:i" }}</span>
+            </div>
+            <p class="text-gray-600 text-sm">
+              Plan de seguimiento y recomendaciones nutricionales personalizadas establecidas.
+            </p>
+          </div>
+        </div>
+        
+        <div class="timeline-item opacity-50">
+          <div class="bg-white/70 rounded-xl p-4 border border-gray-200 border-dashed">
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="font-bold text-gray-600">Próximo Seguimiento</h4>
+              <span class="text-sm text-gray-400">{{ analisis.fecha_analisis|date:"d/m/Y" }}</span>
+            </div>
+            <p class="text-gray-500 text-sm">
+              Evaluación de progreso y ajuste del plan nutricional.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para imagen completa -->
+<div id="imagen-modal" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center hidden" onclick="cerrarImagenCompleta()">
+  <div class="relative max-w-4xl max-h-screen p-4">
+    <button onclick="cerrarImagenCompleta()" 
+            class="absolute top-6 right-6 text-white bg-black/50 rounded-full p-3 hover:bg-black/70 transition-colors z-10">
+      <i class="fas fa-times text-xl"></i>
+    </button>
+    <img id="imagen-completa" src="" alt="Imagen completa" class="max-w-full max-h-full object-contain rounded-lg">
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Función para abrir imagen en modal
+function abrirImagenCompleta(src) {
+    const modal = document.getElementById('imagen-modal');
+    const imagen = document.getElementById('imagen-completa');
+    imagen.src = src;
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+// Función para cerrar modal de imagen
+function cerrarImagenCompleta() {
+    const modal = document.getElementById('imagen-modal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+// Función para imprimir análisis
+function imprimirAnalisis() {
+    const printContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Análisis Nutricional - {{ analisis.nombre_paciente }}</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 40px; color: #333; }
+                .header { text-align: center; border-bottom: 2px solid #28a745; padding-bottom: 20px; margin-bottom: 30px; }
+                .logo { font-size: 24px; font-weight: bold; color: #28a745; margin-bottom: 10px; }
+                .patient-info { background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 30px; }
+                .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+                .info-item { display: flex; align-items: center; }
+                .info-label { font-weight: bold; margin-right: 10px; min-width: 120px; }
+                .estado { padding: 5px 15px; border-radius: 20px; font-weight: bold; display: inline-block; }
+                .estado-0 { background: #f8d7da; color: #721c24; }
+                .estado-1 { background: #fff3cd; color: #856404; }
+                .estado-2 { background: #d4edda; color: #155724; }
+                .confianza { font-size: 24px; font-weight: bold; text-align: center; margin: 20px 0; }
+                .confianza-alta { color: #28a745; }
+                .confianza-media { color: #ffc107; }
+                .confianza-baja { color: #dc3545; }
+                .section { margin-bottom: 30px; page-break-inside: avoid; }
+                .section-title { font-size: 18px; font-weight: bold; color: #28a745; margin-bottom: 15px; border-bottom: 1px solid #dee2e6; padding-bottom: 5px; }
+                .recommendation-list { list-style: none; padding: 0; }
+                .recommendation-item { padding: 8px 0; border-left: 3px solid #28a745; padding-left: 15px; margin-bottom: 10px; background: #f8f9fa; }
+                .footer { text-align: center; margin-top: 50px; padding-top: 20px; border-top: 1px solid #dee2e6; font-size: 12px; color: #6c757d; }
+                @media print { .no-print { display: none; } }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <div class="logo">🔬 Sistema de Análisis Nutricional IA</div>
+                <h1>Reporte de Análisis Nutricional</h1>
+                <p>Generado el ${new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+            </div>
+
+            <div class="patient-info">
+                <h2>Información del Paciente</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Nombre:</span>
+                        <span>{{ analisis.nombre_paciente }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Edad:</span>
+                        <span>{{ analisis.edad_meses }} meses ({{ analisis.edad_anos }} años)</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Género:</span>
+                        <span>{{ analisis.get_genero_display }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Fecha Análisis:</span>
+                        <span>{{ analisis.fecha_analisis|date:"d/m/Y H:i" }}</span>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin: 20px 0;">
+                    <div class="info-item" style="justify-content: center;">
+                        <span class="info-label">Estado Nutricional:</span>
+                        <span class="estado estado-{{ analisis.estado_nutricional }}">{{ analisis.get_estado_nutricional_display }}</span>
+                    </div>
+                </div>
+
+                <div class="confianza confianza-{% if analisis.confianza >= 0.8 %}alta{% elif analisis.confianza >= 0.6 %}media{% else %}baja{% endif %}">
+                    Confianza del Modelo: {{ analisis.confianza_porcentaje }}
+                </div>
+
+                {% if analisis.severidad %}
+                <div style="text-align: center;">
+                    <span class="info-label">Severidad:</span>
+                    <strong>{{ analisis.get_severidad_display }}</strong>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if analisis.recomendaciones_nutricionales %}
+            {% for categoria, recomendaciones in analisis.recomendaciones_nutricionales.items %}
+            <div class="section">
+                <h3 class="section-title">Recomendaciones {{ categoria|capfirst }}</h3>
+                <ul class="recommendation-list">
+                    {% for recomendacion in recomendaciones %}
+                    <li class="recommendation-item">{{ recomendacion }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            {% if analisis.plan_alimentario %}
+            <div class="section">
+                <h3 class="section-title">Plan Alimentario Personalizado</h3>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; line-height: 1.6;">
+                    {{ analisis.plan_alimentario|linebreaks }}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if analisis.observaciones_adicionales %}
+            <div class="section">
+                <h3 class="section-title">Observaciones Adicionales</h3>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; line-height: 1.6;">
+                    {{ analisis.observaciones_adicionales|linebreaks }}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="section">
+                <h3 class="section-title">Información Técnica</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">ID Análisis:</span>
+                        <span style="font-family: monospace;">{{ analisis.id }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Procesado por:</span>
+                        <span>{% if analisis.procesado_por %}{{ analisis.procesado_por.get_full_name|default:analisis.procesado_por.username }}{% else %}Sistema Automático{% endif %}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <p><strong>Sistema de Análisis Nutricional con Inteligencia Artificial</strong></p>
+                <p>Este reporte fue generado automáticamente. Para consultas médicas, siempre consulte con un profesional de la salud.</p>
+                <p>📧 Contacto: info@nutriscan.com | 🌐 www.nutriscan.com</p>
+            </div>
+        </body>
+        </html>
+    `;
+
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    
+    // Esperar a que se cargue y luego imprimir
+    printWindow.onload = function() {
+        printWindow.print();
+        printWindow.onafterprint = function() {
+            printWindow.close();
+        };
+    };
+}
+
+// Cerrar modal con Escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        cerrarImagenCompleta();
+    }
+});
+
+// Animaciones de entrada
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.glass');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            card.style.transition = 'all 0.6s ease-out';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+
+    // Tooltips para métricas
+    const confianzaElement = document.querySelector('.confianza-alta, .confianza-media, .confianza-baja');
+    if (confianzaElement) {
+        confianzaElement.title = 'La confianza indica qué tan seguro está el modelo de IA sobre su predicción';
+    }
+
+    // Highlight de recomendaciones importantes
+    const recomendacionesImportantes = [
+        'consulta médica urgente',
+        'hospitalización',
+        'evaluación inmediata',
+        'seguimiento diario'
+    ];
+
+    document.querySelectorAll('.recomendacion-card p').forEach(p => {
+        const texto = p.textContent.toLowerCase();
+        recomendacionesImportantes.forEach(importante => {
+            if (texto.includes(importante)) {
+                p.parentElement.classList.add('bg-red-50', 'border-red-200');
+                p.classList.add('font-bold', 'text-red-700');
+            }
+        });
+    });
+
+    console.log('Vista de detalle inicializada correctamente');
+});
+
+// Función para copiar ID del análisis
+function copiarID() {
+    const id = '{{ analisis.id }}';
+    navigator.clipboard.writeText(id).then(() => {
+        // Mostrar confirmación temporal
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = '¡Copiado!';
+        btn.classList.add('bg-green-500');
+        
+        setTimeout(() => {
+            btn.textContent = originalText;
+            btn.classList.remove('bg-green-500');
+        }, 2000);
+    });
+}
+
+// Función para compartir análisis (si el navegador lo soporta)
+async function compartirAnalisis() {
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: 'Análisis Nutricional - {{ analisis.nombre_paciente }}',
+                text: 'Estado: {{ analisis.get_estado_nutricional_display }} ({{ analisis.confianza_porcentaje }} confianza)',
+                url: window.location.href
+            });
+        } catch (err) {
+            console.log('Error al compartir:', err);
+        }
+    } else {
+        // Fallback: copiar URL
+        navigator.clipboard.writeText(window.location.href);
+        alert('URL copiada al portapapeles');
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,761 @@
+{% extends 'detector/base.html' %} {% load static %} 
+
+{% block page_title %}{{ recurso.titulo }}{% endblock %} 
+{% block page_subtitle %}Recurso educativo sobre nutrición{% endblock %} 
+
+{% block breadcrumbs %}
+<li class="flex items-center">
+  <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+  <a href="{% url 'recursos:recursos_educativos' %}" class="text-gray-600 hover:text-primary transition-colors">Recursos Educativos</a>
+</li>
+<li class="flex items-center">
+  <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+  <span class="text-primary font-medium">{{ recurso.titulo|truncatechars:30 }}</span>
+</li>
+{% endblock %} 
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8">
+  <!-- Back Button -->
+  <div class="mb-6">
+    <a
+      href="{% url 'recursos:recursos_educativos' %}"
+      class="inline-flex items-center px-4 py-2 glass text-gray-700 font-medium rounded-xl hover:bg-primary/10 transition-all duration-300 border border-primary/20 hover:border-primary/40"
+    >
+      <i class="fas fa-arrow-left mr-2"></i>Volver a recursos
+    </a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="grid lg:grid-cols-3 gap-8">
+    <!-- Resource Content -->
+    <div class="lg:col-span-2 space-y-8">
+      <!-- Header Card -->
+      <div class="glass rounded-2xl p-8 border border-primary/20 shadow-lg">
+        <div class="flex items-start justify-between mb-6">
+          <div class="flex-1">
+            <div class="flex items-center space-x-3 mb-4">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                {% if recurso.categoria == 'guia' %}
+                  bg-primary/10 text-primary
+                {% elif recurso.categoria == 'infografia' %}
+                  bg-accent/10 text-accent
+                {% elif recurso.categoria == 'receta' %}
+                  bg-secondary/10 text-secondary
+                {% elif recurso.categoria == 'video' %}
+                  bg-warning/10 text-warning
+                {% else %}
+                  bg-gray-100 text-gray-600
+                {% endif %}
+              ">
+                {% if recurso.categoria == 'guia' %}
+                  <i class="fas fa-book-open mr-2"></i>Guía Nutricional
+                {% elif recurso.categoria == 'infografia' %}
+                  <i class="fas fa-chart-bar mr-2"></i>Infografía
+                {% elif recurso.categoria == 'receta' %}
+                  <i class="fas fa-utensils mr-2"></i>Receta Saludable
+                {% elif recurso.categoria == 'video' %}
+                  <i class="fas fa-play-circle mr-2"></i>Video Educativo
+                {% else %}
+                  <i class="fas fa-file mr-2"></i>{{ recurso.get_categoria_display }}
+                {% endif %}
+              </span>
+              
+              {% if user.is_staff %}
+              <a
+                href="{% url 'recursos:editar_recurso' recurso.pk %}"
+                class="inline-flex items-center px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full text-sm transition-all duration-300"
+              >
+                <i class="fas fa-edit mr-1"></i>Editar
+              </a>
+              {% endif %}
+            </div>
+
+            <h1 class="text-4xl font-black text-gray-800 mb-4">{{ recurso.titulo }}</h1>
+            <p class="text-lg text-gray-600 leading-relaxed">{{ recurso.descripcion }}</p>
+          </div>
+        </div>
+
+        <!-- Resource Meta Info -->
+        <div class="grid md:grid-cols-4 gap-6 pt-6 border-t border-gray-200">
+          <div class="text-center">
+            <div class="w-12 h-12 bg-gradient-to-r from-primary/20 to-accent/20 rounded-xl flex items-center justify-center mx-auto mb-2">
+              <i class="fas fa-calendar text-primary"></i>
+            </div>
+            <p class="text-sm text-gray-600">Publicado</p>
+            <p class="font-semibold text-gray-800">{{ recurso.fecha_creacion|date:"d/m/Y" }}</p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-12 h-12 bg-gradient-to-r from-accent/20 to-secondary/20 rounded-xl flex items-center justify-center mx-auto mb-2">
+              <i class="fas fa-eye text-accent"></i>
+            </div>
+            <p class="text-sm text-gray-600">Visualizaciones</p>
+            <p class="font-semibold text-gray-800">{{ recurso.visualizaciones }}</p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-12 h-12 bg-gradient-to-r from-secondary/20 to-warning/20 rounded-xl flex items-center justify-center mx-auto mb-2">
+              <i class="fas fa-download text-secondary"></i>
+            </div>
+            <p class="text-sm text-gray-600">Descargas</p>
+            <p class="font-semibold text-gray-800">{{ recurso.descargas }}</p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-12 h-12 bg-gradient-to-r from-warning/20 to-primary/20 rounded-xl flex items-center justify-center mx-auto mb-2">
+              <i class="fas fa-star text-warning"></i>
+            </div>
+            <p class="text-sm text-gray-600">Calificación</p>
+            <p class="font-semibold text-gray-800">⭐⭐⭐⭐⭐</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content Preview Card -->
+      {% if recurso.archivo %}
+      <div class="glass rounded-2xl p-8 border border-primary/20 shadow-lg">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+          <i class="fas fa-file-alt text-primary mr-3"></i>Vista Previa del Contenido
+        </h2>
+
+        <div class="text-center mb-8">
+          <div class="w-32 h-40 mx-auto bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center shadow-lg mb-4">
+            {% if recurso.extension_archivo == 'PDF' %}
+              <i class="fas fa-file-pdf text-red-500 text-4xl"></i>
+            {% elif recurso.extension_archivo == 'DOCX' %}
+              <i class="fas fa-file-word text-blue-500 text-4xl"></i>
+            {% elif recurso.extension_archivo == 'MP4' %}
+              <i class="fas fa-file-video text-purple-500 text-4xl"></i>
+            {% elif recurso.extension_archivo == 'JPG' or recurso.extension_archivo == 'PNG' %}
+              <i class="fas fa-file-image text-green-500 text-4xl"></i>
+            {% else %}
+              <i class="fas fa-file text-gray-500 text-4xl"></i>
+            {% endif %}
+          </div>
+          
+          <div class="space-y-2">
+            <p class="text-lg font-semibold text-gray-800">{{ recurso.titulo }}</p>
+            <p class="text-gray-600">Formato: {{ recurso.extension_archivo }}</p>
+            <p class="text-gray-600">Tamaño: {{ recurso.tamaño_archivo_mb|floatformat:1 }} MB</p>
+          </div>
+        </div>
+
+        <div class="text-center">
+          <a
+            href="{% url 'recursos:descargar_recurso' recurso.pk %}"
+            id="download-resource-btn"
+            class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-secondary to-warning text-white font-bold rounded-xl hover:shadow-glow transition-all duration-300 transform hover:scale-105 shadow-lg"
+            target="_blank"
+          >
+            <i class="fas fa-download mr-3"></i>Descargar Recurso
+          </a>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Additional Information -->
+      {% if recurso.contenido_adicional %}
+      <div class="glass rounded-2xl p-8 border border-primary/20 shadow-lg">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+          <i class="fas fa-info-circle text-accent mr-3"></i>Información Adicional
+        </h2>
+        <div class="prose max-w-none text-gray-600 leading-relaxed">
+          {{ recurso.contenido_adicional|linebreaks }}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Sidebar -->
+    <div class="space-y-6">
+      <!-- Quick Actions -->
+      <div class="glass rounded-2xl p-6 border border-primary/20 shadow-lg">
+        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+          <i class="fas fa-bolt text-warning mr-2"></i>Acciones Rápidas
+        </h3>
+        
+        <div class="space-y-3">
+          {% if recurso.archivo %}
+          <a
+            href="{% url 'recursos:descargar_recurso' recurso.pk %}"
+            class="block w-full px-4 py-3 bg-gradient-to-r from-primary to-accent text-white font-semibold rounded-xl hover:shadow-lg transition-all duration-300 text-center"
+            target="_blank"
+          >
+            <i class="fas fa-download mr-2"></i>Descargar
+          </a>
+          {% endif %}
+          
+          <button
+            id="share-btn"
+            class="block w-full px-4 py-3 glass text-gray-700 font-semibold rounded-xl hover:bg-primary/10 transition-all duration-300 border border-primary/20"
+          >
+            <i class="fas fa-share-alt mr-2"></i>Compartir
+          </button>
+          
+          <button
+            id="favorite-btn"
+            class="block w-full px-4 py-3 glass text-gray-700 font-semibold rounded-xl hover:bg-warning/10 transition-all duration-300 border border-warning/20"
+          >
+            <i class="fas fa-heart mr-2"></i>Favorito
+          </button>
+        </div>
+      </div>
+
+      <!-- Related Resources -->
+      {% if recursos_relacionados %}
+      <div class="glass rounded-2xl p-6 border border-primary/20 shadow-lg">
+        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+          <i class="fas fa-layer-group text-secondary mr-2"></i>Recursos Relacionados
+        </h3>
+        
+        <div class="space-y-4">
+          {% for relacionado in recursos_relacionados %}
+          <a
+            href="{% url 'recursos:detalle_recurso' relacionado.pk %}"
+            class="block p-4 glass rounded-xl hover:bg-primary/5 transition-all duration-300 border border-primary/10 hover:border-primary/30"
+          >
+            <div class="flex items-start space-x-3">
+              <div class="w-10 h-10 bg-gradient-to-r from-primary/20 to-accent/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                {% if relacionado.categoria == 'guia' %}
+                  <i class="fas fa-book-open text-primary"></i>
+                {% elif relacionado.categoria == 'infografia' %}
+                  <i class="fas fa-chart-bar text-accent"></i>
+                {% elif relacionado.categoria == 'receta' %}
+                  <i class="fas fa-utensils text-secondary"></i>
+                {% elif relacionado.categoria == 'video' %}
+                  <i class="fas fa-play-circle text-warning"></i>
+                {% else %}
+                  <i class="fas fa-file text-gray-500"></i>
+                {% endif %}
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="font-semibold text-gray-800 text-sm line-clamp-2">{{ relacionado.titulo }}</h4>
+                <p class="text-xs text-gray-500 mt-1">{{ relacionado.get_categoria_display }}</p>
+                <div class="flex items-center space-x-2 mt-2 text-xs text-gray-400">
+                  <span><i class="fas fa-eye mr-1"></i>{{ relacionado.visualizaciones }}</span>
+                  <span><i class="fas fa-download mr-1"></i>{{ relacionado.descargas }}</span>
+                </div>
+              </div>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+        
+        <div class="mt-4 pt-4 border-t border-gray-200">
+          <a
+            href="{% url 'recursos:recursos_educativos' %}?categoria={{ recurso.categoria }}"
+            class="block text-center px-4 py-2 text-primary hover:bg-primary/10 rounded-lg transition-all duration-300 font-medium"
+          >
+            Ver más {{ recurso.get_categoria_display|lower }}s
+          </a>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Resource Stats -->
+      <div class="glass rounded-2xl p-6 border border-primary/20 shadow-lg">
+        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+          <i class="fas fa-chart-line text-primary mr-2"></i>Estadísticas
+        </h3>
+        
+        <div class="space-y-4">
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600">Vistas hoy:</span>
+            <span class="font-semibold text-primary">{{ recurso.visualizaciones|floatformat:0 }}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600">Descargas totales:</span>
+            <span class="font-semibold text-secondary">{{ recurso.descargas }}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600">Popularidad:</span>
+            <div class="flex space-x-1">
+              <i class="fas fa-star text-warning"></i>
+              <i class="fas fa-star text-warning"></i>
+              <i class="fas fa-star text-warning"></i>
+              <i class="fas fa-star text-warning"></i>
+              <i class="fas fa-star text-warning"></i>
+            </div>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600">Categoría ranking:</span>
+            <span class="font-semibold text-accent">#3</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Help & Support -->
+      <div class="glass rounded-2xl p-6 border border-primary/20 shadow-lg">
+        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+          <i class="fas fa-question-circle text-accent mr-2"></i>¿Necesitas Ayuda?
+        </h3>
+        
+        <p class="text-gray-600 text-sm mb-4">
+          ¿Tienes problemas para descargar o usar este recurso?
+        </p>
+        
+        <div class="space-y-2">
+          <button class="block w-full px-4 py-2 text-left text-primary hover:bg-primary/10 rounded-lg transition-all duration-300">
+            <i class="fas fa-question mr-2"></i>Preguntas frecuentes
+          </button>
+          <button class="block w-full px-4 py-2 text-left text-primary hover:bg-primary/10 rounded-lg transition-all duration-300">
+            <i class="fas fa-envelope mr-2"></i>Contactar soporte
+          </button>
+          <button class="block w-full px-4 py-2 text-left text-primary hover:bg-primary/10 rounded-lg transition-all duration-300">
+            <i class="fas fa-bug mr-2"></i>Reportar problema
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Share Modal -->
+<div id="shareModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+  <div class="glass rounded-3xl max-w-md w-full border border-primary/30 shadow-2xl bg-white/95 animate-scale-in">
+    <!-- Modal Header -->
+    <div class="bg-gradient-to-r from-primary/10 to-accent/10 p-6 border-b border-primary/20">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xl font-bold text-gray-800 flex items-center">
+          <i class="fas fa-share-alt text-primary mr-2"></i>Compartir Recurso
+        </h3>
+        <button
+          id="share-modal-close"
+          class="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition-colors duration-300 flex items-center justify-center"
+        >
+          <i class="fas fa-times text-sm"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal Content -->
+    <div class="p-6">
+      <div class="space-y-4">
+        <!-- Social Share Buttons -->
+        <div class="grid grid-cols-2 gap-3">
+          <button
+            onclick="shareToFacebook()"
+            class="flex items-center justify-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all duration-300"
+          >
+            <i class="fab fa-facebook-f mr-2"></i>Facebook
+          </button>
+          <button
+            onclick="shareToTwitter()"
+            class="flex items-center justify-center px-4 py-3 bg-sky-500 hover:bg-sky-600 text-white rounded-xl transition-all duration-300"
+          >
+            <i class="fab fa-twitter mr-2"></i>Twitter
+          </button>
+          <button
+            onclick="shareToWhatsApp()"
+            class="flex items-center justify-center px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl transition-all duration-300"
+          >
+            <i class="fab fa-whatsapp mr-2"></i>WhatsApp
+          </button>
+          <button
+            onclick="shareByEmail()"
+            class="flex items-center justify-center px-4 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-xl transition-all duration-300"
+          >
+            <i class="fas fa-envelope mr-2"></i>Email
+          </button>
+        </div>
+
+        <!-- Copy Link -->
+        <div class="mt-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Enlace directo</label>
+          <div class="flex">
+            <input
+              type="text"
+              id="share-url"
+              value="{{ request.build_absolute_uri }}"
+              readonly
+              class="flex-1 glass rounded-l-xl px-4 py-3 text-gray-800 border border-primary/20 focus:outline-none focus:ring-2 focus:ring-primary/50"
+            />
+            <button
+              onclick="copyToClipboard()"
+              class="px-4 py-3 bg-primary hover:bg-primary/80 text-white rounded-r-xl transition-all duration-300"
+            >
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const downloadBtn = document.getElementById("download-resource-btn");
+    const shareBtn = document.getElementById("share-btn");
+    const favoriteBtn = document.getElementById("favorite-btn");
+    const shareModal = document.getElementById("shareModal");
+    const shareModalClose = document.getElementById("share-modal-close");
+
+    // Resource data
+    const resourceData = {
+      id: {{ recurso.pk }},
+      title: "{{ recurso.titulo|escapejs }}",
+      url: "{{ request.build_absolute_uri }}"
+    };
+
+    // Download tracking
+    if (downloadBtn) {
+      downloadBtn.addEventListener("click", function(e) {
+        // Track download
+        logResourceInteraction('download', resourceData.id);
+        
+        // Particle effect
+        if (window.NutriScanParticles) {
+          const rect = this.getBoundingClientRect();
+          window.NutriScanParticles.effects.organicGrowth(
+            rect.left + rect.width / 2,
+            rect.top + rect.height / 2,
+            50
+          );
+        }
+
+        showNotification("Descarga iniciada", "success");
+      });
+    }
+
+    // Share functionality
+    shareBtn.addEventListener("click", function() {
+      shareModal.classList.remove("hidden");
+      document.body.classList.add("overflow-hidden");
+      
+      logResourceInteraction('share_opened', resourceData.id);
+    });
+
+    shareModalClose.addEventListener("click", function() {
+      shareModal.classList.add("hidden");
+      document.body.classList.remove("overflow-hidden");
+    });
+
+    // Close modal when clicking outside
+    shareModal.addEventListener("click", function(e) {
+      if (e.target === shareModal) {
+        shareModal.classList.add("hidden");
+        document.body.classList.remove("overflow-hidden");
+      }
+    });
+
+    // Favorite functionality
+    favoriteBtn.addEventListener("click", function() {
+      const isFavorited = this.classList.contains('favorited');
+      
+      if (isFavorited) {
+        this.classList.remove('favorited');
+        this.innerHTML = '<i class="fas fa-heart mr-2"></i>Favorito';
+        this.classList.remove('bg-warning/20', 'text-warning', 'border-warning/40');
+        this.classList.add('bg-white/70', 'text-gray-700', 'border-primary/20');
+        showNotification("Removido de favoritos", "info");
+      } else {
+        this.classList.add('favorited');
+        this.innerHTML = '<i class="fas fa-heart mr-2 text-warning"></i>Favorito';
+        this.classList.add('bg-warning/20', 'text-warning', 'border-warning/40');
+        this.classList.remove('bg-white/70', 'text-gray-700', 'border-primary/20');
+        showNotification("Agregado a favoritos", "success");
+        
+        // Particle effect
+        if (window.NutriScanParticles) {
+          const rect = this.getBoundingClientRect();
+          window.NutriScanParticles.effects.bloomEffect(
+            rect.left + rect.width / 2,
+            rect.top + rect.height / 2,
+            5
+          );
+        }
+      }
+      
+      logResourceInteraction('favorite_toggle', resourceData.id, { favorited: !isFavorited });
+    });
+
+    // Page load animations
+    const cards = document.querySelectorAll('.glass');
+    cards.forEach((card, index) => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(30px)';
+      
+      setTimeout(() => {
+        card.style.transition = 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+      }, index * 150);
+    });
+
+    // Related resources hover effects
+    const relatedLinks = document.querySelectorAll('a[href*="detalle_recurso"]');
+    relatedLinks.forEach(link => {
+      link.addEventListener('mouseenter', function() {
+        if (window.NutriScanParticles) {
+          const rect = this.getBoundingClientRect();
+          window.NutriScanParticles.system.addParticlesAt(
+            rect.left + rect.width / 2,
+            rect.top + rect.height / 2,
+            1
+          );
+        }
+      });
+    });
+
+    // Track page view
+    logResourceInteraction('view', resourceData.id, {
+      referrer: document.referrer,
+      timestamp: new Date().toISOString()
+    });
+
+    // Auto-scroll to content on mobile
+    if (window.innerWidth < 768) {
+      setTimeout(() => {
+        document.querySelector('.lg\\:col-span-2').scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }, 1000);
+    }
+
+    console.log("🌿 Detalle de Recurso - Sistema inicializado");
+  });
+
+  // Share functions
+  function shareToFacebook() {
+    const url = encodeURIComponent("{{ request.build_absolute_uri }}");
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'width=600,height=400');
+    logResourceInteraction('share', {{ recurso.pk }}, { platform: 'facebook' });
+  }
+
+  function shareToTwitter() {
+    const url = encodeURIComponent("{{ request.build_absolute_uri }}");
+    const text = encodeURIComponent("{{ recurso.titulo|escapejs }} - Recurso educativo sobre nutrición");
+    window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank', 'width=600,height=400');
+    logResourceInteraction('share', {{ recurso.pk }}, { platform: 'twitter' });
+  }
+
+  function shareToWhatsApp() {
+    const url = encodeURIComponent("{{ request.build_absolute_uri }}");
+    const text = encodeURIComponent("{{ recurso.titulo|escapejs }} - Recurso educativo sobre nutrición: ");
+    window.open(`https://wa.me/?text=${text}${url}`, '_blank');
+    logResourceInteraction('share', {{ recurso.pk }}, { platform: 'whatsapp' });
+  }
+
+  function shareByEmail() {
+    const subject = encodeURIComponent("{{ recurso.titulo|escapejs }} - Recurso Educativo");
+    const body = encodeURIComponent(`Te comparto este recurso educativo sobre nutrición:\n\n{{ recurso.titulo|escapejs }}\n\n{{ recurso.descripcion|escapejs }}\n\nVer recurso: {{ request.build_absolute_uri }}`);
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    logResourceInteraction('share', {{ recurso.pk }}, { platform: 'email' });
+  }
+
+  function copyToClipboard() {
+    const urlInput = document.getElementById('share-url');
+    urlInput.select();
+    urlInput.setSelectionRange(0, 99999);
+    
+    try {
+      document.execCommand('copy');
+      showNotification("Enlace copiado al portapapeles", "success");
+      logResourceInteraction('share', {{ recurso.pk }}, { platform: 'clipboard' });
+    } catch (err) {
+      showNotification("No se pudo copiar el enlace", "error");
+    }
+  }
+
+  // Analytics function
+  function logResourceInteraction(action, resourceId, additionalData = {}) {
+    const data = {
+      action: action,
+      resource_id: resourceId,
+      timestamp: new Date().toISOString(),
+      user_agent: navigator.userAgent,
+      page_url: window.location.href,
+      ...additionalData
+    };
+    
+    console.log('Resource interaction:', data);
+    
+    // Send to server analytics endpoint
+    fetch('/recursos/track-interaction/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+      },
+      body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+      if (result.status === 'success') {
+        console.log('Interaction tracked successfully');
+      }
+    })
+    .catch(error => {
+      console.error('Error tracking interaction:', error);
+    });
+  }
+
+  // Enhanced notification system
+  function showNotification(message, type = "info") {
+    const notification = document.createElement("div");
+    const colors = {
+      success: "from-primary to-accent",
+      error: "from-red-500 to-pink-500",
+      warning: "from-warning to-primary",
+      info: "from-secondary to-accent",
+    };
+
+    const icons = {
+      success: "fa-check-circle",
+      error: "fa-exclamation-triangle",
+      warning: "fa-exclamation-circle",
+      info: "fa-info-circle",
+    };
+
+    notification.innerHTML = `
+      <div class="fixed top-24 right-8 z-50 animate-slide-in-right">
+        <div class="bg-gradient-to-r ${colors[type]} text-white px-6 py-4 rounded-2xl shadow-lg backdrop-blur-sm max-w-sm">
+          <div class="flex items-center space-x-3">
+            <i class="fas ${icons[type]} text-xl"></i>
+            <span class="font-semibold">${message}</span>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+      notification.style.transform = "translateX(100%)";
+      notification.style.opacity = "0";
+      setTimeout(() => notification.remove(), 300);
+    }, 4000);
+  }
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', function(e) {
+    // D for download
+    if (e.key === 'd' || e.key === 'D') {
+      const downloadBtn = document.getElementById('download-resource-btn');
+      if (downloadBtn && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault();
+        downloadBtn.click();
+      }
+    }
+    
+    // S for share
+    if (e.key === 's' || e.key === 'S') {
+      if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault();
+        document.getElementById('share-btn').click();
+      }
+    }
+    
+    // F for favorite
+    if (e.key === 'f' || e.key === 'F') {
+      if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault();
+        document.getElementById('favorite-btn').click();
+      }
+    }
+  });
+
+  // Reading time estimation
+  function estimateReadingTime() {
+    const content = document.querySelector('.prose');
+    if (content) {
+      const words = content.innerText.split(' ').length;
+      const readingTime = Math.ceil(words / 200); // 200 words per minute
+      
+      const timeIndicator = document.createElement('div');
+      timeIndicator.className = 'text-sm text-gray-500 mt-2';
+      timeIndicator.innerHTML = `<i class="fas fa-clock mr-1"></i>Tiempo de lectura: ${readingTime} min`;
+      
+      content.parentNode.insertBefore(timeIndicator, content);
+    }
+  }
+
+  // Initialize reading time estimation
+  estimateReadingTime();
+
+  // CSS animations
+  const style = document.createElement('style');
+  style.textContent = `
+    .animate-slide-in-right {
+      animation: slideInRight 0.6s ease-out;
+    }
+    
+    .animate-scale-in {
+      animation: scaleIn 0.4s ease-out;
+    }
+    
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes scaleIn {
+      from {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .prose {
+      line-height: 1.8;
+    }
+    
+    .prose p {
+      margin-bottom: 1rem;
+    }
+    
+    /* Smooth transitions for interactive elements */
+    button, a {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    /* Enhanced hover effects */
+    .glass:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(34, 197, 94, 0.1);
+    }
+    
+    /* Custom scrollbar for modal */
+    .overflow-y-auto::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .overflow-y-auto::-webkit-scrollbar-track {
+      background: rgba(34, 197, 94, 0.1);
+      border-radius: 3px;
+    }
+    
+    .overflow-y-auto::-webkit-scrollbar-thumb {
+      background: rgba(34, 197, 94, 0.3);
+      border-radius: 3px;
+    }
+    
+    .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+      background: rgba(34, 197, 94, 0.5);
+    }
+  `;
+  
+  document.head.appendChild(style);
+</script>
+
+{% endblock %}

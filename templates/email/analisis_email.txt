@@ -1,0 +1,79 @@
+
+================================================
+🔬 NUTRISCAN IA - REPORTE DE ANÁLISIS NUTRICIONAL
+================================================
+
+Estimado/a {{ usuario.get_full_name|default:usuario.username }},
+
+Le enviamos el reporte completo del análisis nutricional realizado con nuestro sistema de inteligencia artificial.
+
+📋 INFORMACIÓN DEL PACIENTE
+================================================
+👶 Nombre: {{ analisis.nombre_paciente }}
+📅 Edad: {{ analisis.edad_meses }} meses ({{ analisis.edad_anos }} años)
+⚧ Género: {{ analisis.get_genero_display }}
+🗓️ Fecha del Análisis: {{ analisis.fecha_analisis|date:"d/m/Y H:i" }}
+👨‍⚕️ Procesado por: {% if analisis.procesado_por %}{{ analisis.procesado_por.get_full_name|default:analisis.procesado_por.username }}{% else %}Sistema Automático{% endif %}
+
+🎯 RESULTADOS DEL ANÁLISIS
+================================================
+🏥 Estado Nutricional: {{ analisis.get_estado_nutricional_display }}
+📊 Confianza del Modelo: {{ analisis.confianza_porcentaje }}
+{% if analisis.severidad %}🔍 Severidad: {{ analisis.get_severidad_display }}{% endif %}
+
+Interpretación de la Confianza:
+{% if analisis.confianza >= 0.8 %}✅ Confianza Alta - Resultado muy confiable{% elif analisis.confianza >= 0.6 %}⚠️ Confianza Media - Se recomienda evaluación adicional{% else %}❌ Confianza Baja - Requiere evaluación médica profesional{% endif %}
+
+{% if analisis.recomendaciones_nutricionales %}
+🍎 RECOMENDACIONES
+================================================
+{% for categoria, recomendaciones in analisis.recomendaciones_nutricionales.items %}
+
+{% if categoria == 'alimentarias' %}🍎 RECOMENDACIONES ALIMENTARIAS:
+{% elif categoria == 'medicas' %}🏥 RECOMENDACIONES MÉDICAS:
+{% else %}📋 PLAN DE SEGUIMIENTO:{% endif %}
+{% for recomendacion in recomendaciones %}
+• {{ recomendacion }}
+{% endfor %}
+{% endfor %}
+{% endif %}
+
+{% if analisis.plan_alimentario %}
+🍽️ PLAN ALIMENTARIO PERSONALIZADO
+================================================
+{{ analisis.plan_alimentario }}
+{% endif %}
+
+{% if analisis.observaciones_adicionales %}
+📝 OBSERVACIONES ADICIONALES
+================================================
+{{ analisis.observaciones_adicionales }}
+{% endif %}
+
+⚠️ AVISO MÉDICO IMPORTANTE
+================================================
+Este reporte ha sido generado automáticamente por un sistema de 
+inteligencia artificial y tiene fines informativos únicamente. 
+
+NO sustituye el diagnóstico, tratamiento o consejo médico profesional. 
+Siempre consulte con un pediatra o nutricionista calificado para 
+obtener evaluación y tratamiento médico apropiado.
+
+🔧 INFORMACIÓN TÉCNICA
+================================================
+ID del Análisis: {{ analisis.id }}
+Fecha de Procesamiento: {{ analisis.fecha_procesamiento|date:"d/m/Y H:i"|default:"N/A" }}
+Versión del Sistema: NutriScan IA v2.1
+Fecha del Reporte: {{ fecha_envio|date:"d/m/Y H:i" }}
+
+================================================
+🔬 NutriScan IA
+Sistema de Análisis Nutricional con Inteligencia Artificial
+
+📧 soporte@nutriscan.com
+🌐 www.nutriscan.com
+📞 +1 (555) 123-4567
+🏢 Instituto de Nutrición Avanzada
+
+Este email fue enviado a {{ usuario.email }} el {{ fecha_envio|date:"d/m/Y H:i" }}
+================================================
